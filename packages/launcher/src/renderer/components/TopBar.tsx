@@ -58,11 +58,11 @@ export function TopBar({
               "rounded-(--radius-sm) bg-(--bg-card) border border-(--border)",
               "hover:border-(--border-hover) transition-colors cursor-pointer text-left",
             )}
-            title="Open command palette"
+            title="打开命令面板"
           >
             <Search className="w-3.5 h-3.5 text-(--text-tertiary)" />
             <span className="flex-1 text-[12px] text-(--text-tertiary)">
-              Search agents, workspaces…
+              搜索智能体、工作空间…
             </span>
             <kbd className="text-[10px] bg-(--bg-input) text-(--text-secondary) px-1.5 py-0.5 rounded-sm">
               ⌘K

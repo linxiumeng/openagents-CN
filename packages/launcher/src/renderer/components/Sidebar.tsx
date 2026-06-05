@@ -34,23 +34,23 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" />, section: "overview" },
+  { id: "dashboard", label: "仪表盘", icon: <LayoutDashboard className="w-4 h-4" />, section: "overview" },
 
-  { id: "install", label: "Marketplace", icon: <Download className="w-4 h-4" />, section: "manage" },
-  { id: "agents", label: "Agents", icon: <Cpu className="w-4 h-4" />, section: "manage" },
-  { id: "workspaces", label: "Workspaces", icon: <Layers className="w-4 h-4" />, section: "manage" },
-  { id: "connections", label: "Connections", icon: <Plug className="w-4 h-4" />, section: "manage" },
-  { id: "credentials", label: "Credentials", icon: <KeyRound className="w-4 h-4" />, section: "manage" },
+  { id: "install", label: "市场", icon: <Download className="w-4 h-4" />, section: "manage" },
+  { id: "agents", label: "智能体", icon: <Cpu className="w-4 h-4" />, section: "manage" },
+  { id: "workspaces", label: "工作空间", icon: <Layers className="w-4 h-4" />, section: "manage" },
+  { id: "connections", label: "连接", icon: <Plug className="w-4 h-4" />, section: "manage" },
+  { id: "credentials", label: "凭据", icon: <KeyRound className="w-4 h-4" />, section: "manage" },
   { id: "github", label: "GitHub", icon: <Github className="w-4 h-4" />, section: "manage" },
 
-  { id: "logs", label: "Logs", icon: <FileText className="w-4 h-4" />, section: "system" },
-  { id: "settings", label: "Settings", icon: <SettingsIcon className="w-4 h-4" />, section: "system" },
+  { id: "logs", label: "日志", icon: <FileText className="w-4 h-4" />, section: "system" },
+  { id: "settings", label: "设置", icon: <SettingsIcon className="w-4 h-4" />, section: "system" },
 ]
 
 const SECTION_LABELS: Record<SectionId, string> = {
-  overview: "Overview",
-  manage: "Manage",
-  system: "System",
+  overview: "概览",
+  manage: "管理",
+  system: "系统",
 }
 
 export default function Sidebar(): React.JSX.Element {
@@ -80,12 +80,12 @@ export default function Sidebar(): React.JSX.Element {
 
   const daemonLabel =
     daemonStatus === "running"
-      ? "Daemon running"
+      ? "守护进程运行中"
       : daemonStatus === "starting"
-        ? "Daemon starting"
+        ? "守护进程启动中"
         : daemonStatus === "stopped"
-          ? "Daemon stopped"
-          : "Daemon offline"
+          ? "守护进程已停止"
+          : "守护进程离线"
 
   const sections: SectionId[] = ["overview", "manage", "system"]
 
@@ -235,7 +235,7 @@ function NotificationBellDark(): React.JSX.Element {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        title="Notifications"
+        title="通知"
         className="relative w-7 h-7 rounded-md flex items-center justify-center cursor-pointer border-0 bg-transparent text-[#a8aabb] hover:bg-[#15171f] hover:text-white transition-colors"
       >
         <Bell className="w-3.5 h-3.5" />
@@ -257,10 +257,10 @@ function NotificationBellDark(): React.JSX.Element {
         >
           <div className="flex items-center justify-between px-3 py-2.5 border-b border-(--border)">
             <div className="text-[13px] font-semibold text-(--text-primary)">
-              Notifications
+              通知
               {unread > 0 && (
                 <span className="ml-1.5 text-[11px] text-(--text-tertiary) font-normal">
-                  {unread} unread
+                  {unread} 条未读
                 </span>
               )}
             </div>
@@ -271,7 +271,7 @@ function NotificationBellDark(): React.JSX.Element {
                   onClick={() => markAllRead()}
                   className="text-[11px] text-(--text-secondary) hover:text-(--text-primary) bg-transparent border-0 cursor-pointer"
                 >
-                  Mark all read
+                  全部已读
                 </button>
               )}
               {items.length > 0 && (
@@ -280,7 +280,7 @@ function NotificationBellDark(): React.JSX.Element {
                   onClick={() => clear()}
                   className="text-[11px] text-(--text-secondary) hover:text-(--text-primary) bg-transparent border-0 cursor-pointer"
                 >
-                  Clear
+                  清空
                 </button>
               )}
             </div>
@@ -288,7 +288,7 @@ function NotificationBellDark(): React.JSX.Element {
           <div className="flex-1 overflow-y-auto">
             {recent.length === 0 ? (
               <div className="px-4 py-8 text-center text-[12px] text-(--text-tertiary)">
-                No notifications yet.
+                暂无通知。
               </div>
             ) : (
               <ul className="m-0 p-0 list-none">
@@ -335,8 +335,8 @@ function ThemeToggleDark(): React.JSX.Element {
     <button
       type="button"
       onClick={() => setMode(next)}
-      title={`Theme: ${mode} — click for ${next}`}
-      aria-label="Toggle theme"
+      title={`主题：${mode} — 点击切换为 ${next}`}
+      aria-label="切换主题"
       className="w-7 h-7 rounded-md flex items-center justify-center cursor-pointer border-0 bg-transparent text-[#a8aabb] hover:bg-[#15171f] hover:text-white transition-colors"
     >
       <Icon className="w-3.5 h-3.5" />

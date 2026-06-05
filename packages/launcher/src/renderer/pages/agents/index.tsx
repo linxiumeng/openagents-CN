@@ -190,8 +190,8 @@ export default function Agents({ showToast }: AgentsProps): React.JSX.Element {
   return (
     <section className="flex flex-col h-full">
       <TopBar
-        title="My Agents"
-        subtitle="— Manage installed agent instances"
+        title="我的智能体"
+        subtitle="— 管理已安装的智能体实例"
         actions={
           <Button variant="primary" onClick={() => setNewAgentOpen(true)}>
             <Plus className="w-3.5 h-3.5" />

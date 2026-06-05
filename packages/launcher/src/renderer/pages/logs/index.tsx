@@ -229,8 +229,8 @@ export default function Logs({ showToast }: LogsProps): React.JSX.Element {
   return (
     <section className="flex flex-col h-full">
       <TopBar
-        title="Logs"
-        subtitle="— Daemon and agent output, with level and timeline views"
+        title="日志"
+        subtitle="— 守护进程和智能体输出，支持级别和时间线视图"
         actions={
           <div className="flex gap-1 p-1 rounded-(--radius-sm) bg-(--bg-input)">
             {(["list", "timeline"] as const).map((v) => (
@@ -270,7 +270,7 @@ export default function Logs({ showToast }: LogsProps): React.JSX.Element {
         <div className="flex items-center gap-1 px-2.5 py-1 rounded-sm bg-(--bg-input) text-[11px]">
           <Search className="w-3 h-3 text-(--text-tertiary)" />
           <input
-            placeholder="Search…"
+            placeholder="搜索…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-transparent border-0 outline-none w-[180px] text-[12px] py-0.5"

@@ -26,7 +26,7 @@ console = Console()
 # Main Typer app
 app = typer.Typer(
     name="openagents",
-    help="[bold blue]OpenAgents[/bold blue] - AI Agent Networks for Open Collaboration",
+    help="[bold blue]OpenAgents[/bold blue] - 开放协作的 AI 智能体网络",
     add_completion=False,
     rich_markup_mode="rich",
     invoke_without_command=True,
@@ -51,8 +51,8 @@ def show_banner():
 [bold blue]  \\___/| .__/  \\___||_| |_|      /___,'   \\__, | \\___||_| |_|  \\__|___/[/bold blue]
 [bold blue]       |_|                              |___/                        [/bold blue]
 
-[bold cyan]AI Agent Networks for Open Collaboration[/bold cyan]
-[dim]   Create and manage distributed AI agent networks with ease[/dim]
+[bold cyan]开放协作的 AI 智能体网络[/bold cyan]
+[dim]   轻松创建和管理分布式 AI 智能体网络[/dim]
 """
     console.print(Panel(
         banner_text.strip(),

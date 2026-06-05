@@ -29,7 +29,7 @@
     "dist": "npm run build && electron-builder --publish always"
   },
   "dependencies": {
-    "@openagents-org/agent-launcher": "0.2.133",
+    "@openagents-org/agent-launcher": "file:../agent-connector/openagents-org-agent-launcher-0.2.133.tgz",
     "clsx": "^2.1.1",
     "lucide-react": "^0.460.0",
     "posthog-js": "^1.376.0",
@@ -96,12 +96,9 @@
       ],
       "icon": "assets/icon.icns",
       "category": "public.app-category.developer-tools",
-      "hardenedRuntime": true,
+      "hardenedRuntime": false,
       "gatekeeperAssess": false,
-      "entitlements": "entitlements.mac.plist",
-      "entitlementsInherit": "entitlements.mac.plist",
-      "identity": "ZHONGYUAN ZHU (AP69DBR725)",
-      "notarize": true
+      "notarize": false
     },
     "dmg": {
       "title": "${productName} ${version}"

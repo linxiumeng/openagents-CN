@@ -20,15 +20,15 @@ function Step($msg)  { Write-Host ""; Info $msg }
 
 # --- Header ---
 Write-Host ""
-Write-Host "  OpenAgents Installer" -ForegroundColor White -NoNewline
+Write-Host "  OpenAgents 安装程序" -ForegroundColor White -NoNewline
 Write-Host "  v$VERSION" -ForegroundColor DarkGray
-Write-Host "  Multi-agent orchestration for your local machine" -ForegroundColor DarkGray
+Write-Host "  本地多智能体编排工具" -ForegroundColor DarkGray
 Write-Host ""
 
 # =========================================================================
 # Step 1: Node.js
 # =========================================================================
-Step "Checking Node.js $MIN_NODE_MAJOR+..."
+Step "正在检查 Node.js $MIN_NODE_MAJOR+..."
 
 function Find-Node {
     $exe = Get-Command node -ErrorAction SilentlyContinue
@@ -54,7 +54,7 @@ $node = Find-Node
 if ($node) {
     Ok "Node.js $($node.Version) ($($node.Path))"
 } else {
-    Warn "Node.js $MIN_NODE_MAJOR+ not found - installing portable Node.js..."
+    Warn "未找到 Node.js $MIN_NODE_MAJOR+ — 正在安装便携版 Node.js..."
 
     $nodeVersion = "v22.16.0"
     $arch = if ([Environment]::Is64BitOperatingSystem) { "x64" } else { "x86" }
@@ -62,11 +62,11 @@ if ($node) {
     $zipPath = Join-Path $env:TEMP "node-$nodeVersion.zip"
     $nodejsDir = Join-Path $env:USERPROFILE ".openagents\nodejs"
 
-    Info "Downloading $url..."
+    Info "正在下载 $url..."
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing
 
-    Info "Extracting to $nodejsDir..."
+    Info "正在解压到 $nodejsDir..."
     New-Item -ItemType Directory -Force -Path $nodejsDir | Out-Null
     Expand-Archive -Path $zipPath -DestinationPath $nodejsDir -Force
 
@@ -84,16 +84,16 @@ if ($node) {
 
     $node = Find-Node
     if ($node) {
-        Ok "Node.js $($node.Version) installed (portable)"
+        Ok "Node.js $($node.Version) 已安装（便携版）"
     } else {
-        Fail "Node.js installation failed. Please install from https://nodejs.org"
+        Fail "Node.js 安装失败。请从 https://nodejs.org 安装"
     }
 }
 
 # =========================================================================
 # Step 2: Install/upgrade openagents
 # =========================================================================
-Step "Installing OpenAgents CLI..."
+Step "正在安装 OpenAgents CLI..."
 
 # Find npm
 $npmCmd = Get-Command npm -ErrorAction SilentlyContinue
@@ -109,8 +109,8 @@ $existing = Get-Command openagents -ErrorAction SilentlyContinue
 if ($existing) {
     $currentVer = cmd /c "openagents --version 2>nul" 2>$null
     if ($currentVer -and "$currentVer" -match 'agent-launcher|agent-connector') {
-        Ok "openagents already installed ($currentVer)"
-        Info "Upgrading to latest..."
+        Ok "openagents 已安装 ($currentVer)"
+        Info "正在升级到最新版..."
     }
 }
 
@@ -154,7 +154,7 @@ if ($latestVer -and ($latestVer -ne $installedVer)) {
     }
     Ok "$NPM_PACKAGE v$latestVer installed"
 } elseif ($installedVer) {
-    Ok "Already up to date ($installedVer)"
+    Ok "已是最新版 ($installedVer)"
 }
 
 $env:PATH = "$prefixDir\node_modules\.bin;$prefixDir;$env:PATH"
@@ -178,15 +178,15 @@ if ($acCmd) {
     try { $newVer = (Get-Content $corePkg -ErrorAction SilentlyContinue | ConvertFrom-Json).version } catch {}
     if (-not $newVer) { $newVer = if ($latestVer) { $latestVer } else { $installedVer } }
     $oaBin = $acCmd.Source
-    Ok "openagents v$newVer installed"
+    Ok "openagents v$newVer 已安装"
 } else {
-    Fail "Failed to install openagents. Try: npm install -g $NPM_PACKAGE"
+    Fail "openagents 安装失败。请尝试：npm install -g $NPM_PACKAGE"
 }
 
 # =========================================================================
 # Step 3: Detect local AI agents
 # =========================================================================
-Step "Detecting local AI agents..."
+Step "正在检测本地 AI 智能体..."
 
 $agentCount = 0
 
@@ -197,7 +197,7 @@ function Detect-Agent($name, $binary) {
         if ($ver) { Ok "$name ($ver)" } else { Ok $name }
         $script:agentCount++
     } else {
-        Write-Host "  $name - not installed" -ForegroundColor DarkGray
+        Write-Host "  $name — 未安装" -ForegroundColor DarkGray
     }
 }
 
@@ -215,7 +215,7 @@ Detect-Agent "OpenCode"       "opencode"
 # Done
 # =========================================================================
 Write-Host ""
-Write-Host "  Installation complete!" -ForegroundColor Green
+Write-Host "  安装完成！" -ForegroundColor Green
 Write-Host ""
 
 # Auto-configure PATH if needed
@@ -248,18 +248,18 @@ if ($needsPath.Count -gt 0) {
     [Environment]::SetEnvironmentVariable("PATH", $newPath, "User")
     # Also update current session
     $env:PATH = "$additions;$env:PATH"
-    Ok "PATH configured for: $($needsPath -join ', ')"
-    Write-Host "  Restart your terminal for PATH changes to take effect." -ForegroundColor DarkGray
+    Ok "PATH 已配置：$($needsPath -join ', ')"
+    Write-Host "  请重启终端以使 PATH 更改生效。" -ForegroundColor DarkGray
     Write-Host ""
 }
 
-Write-Host "  Get started:" -ForegroundColor White
+Write-Host "  开始使用：" -ForegroundColor White
 Write-Host ""
 Write-Host "    openagents" -ForegroundColor White -NoNewline
-Write-Host "                  Launch the interactive dashboard"
+Write-Host "                  启动交互式仪表盘"
 Write-Host ""
 
 if ($agentCount -eq 0) {
-    Write-Host "  No AI agents found. The dashboard will help you install one." -ForegroundColor DarkGray
+    Write-Host "  未发现 AI 智能体。仪表盘将帮助你安装一个。" -ForegroundColor DarkGray
     Write-Host ""
 }

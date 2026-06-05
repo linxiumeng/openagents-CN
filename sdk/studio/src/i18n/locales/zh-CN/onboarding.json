@@ -10,7 +10,7 @@
     "skipButton": "跳过设置（高级用户）"
   },
   "step2": {
-    "stepIndicator": "步骤 2 / 4",
+    "stepIndicator": "步骤 2 / 5",
     "title": "选择你的第一个网络模板",
     "description": "选择一个模板快速开始。你可以稍后自定义所有内容。",
     "selectButton": "选择",
@@ -49,7 +49,7 @@
     "nextButton": "继续 →"
   },
   "step3": {
-    "stepIndicator": "步骤 3 / 4",
+    "stepIndicator": "步骤 3 / 5",
     "title": "保护你的 Admin Dashboard",
     "description": "设置密码以保护你网络的管理员设置。",
     "adminPasswordLabel": "管理员密码",
@@ -62,8 +62,24 @@
     "continueButton": "继续 →",
     "setting": "设置中..."
   },
+  "stepModelConfig": {
+    "stepIndicator": "步骤 4 / 5",
+    "title": "配置默认 AI 模型（可选）",
+    "description": "可选地为服务智能体设置默认 AI 模型。之后可在设置中更改。",
+    "providerLabel": "模型提供商",
+    "selectProvider": "选择提供商...",
+    "modelNameLabel": "模型名称",
+    "selectModel": "选择模型...",
+    "modelNamePlaceholder": "输入模型名称（例如 gpt-4o）",
+    "apiKeyLabel": "API 密钥",
+    "apiKeyPlaceholder": "输入你的 API 密钥",
+    "hint": "此配置将作为服务智能体在自动模式下的默认配置。之后可在网络设置中更改。",
+    "backButton": "← 返回",
+    "skipButton": "跳过",
+    "continueButton": "继续 →"
+  },
   "step4": {
-    "stepIndicator": "步骤 4 / 4",
+    "stepIndicator": "步骤 5 / 5",
     "title": "正在设置你的网络...",
     "steps": {
       "createConfig": "创建网络配置",

@@ -317,8 +317,8 @@ export default function Install({
   return (
     <section className="flex flex-col h-full">
       <TopBar
-        title="Marketplace"
-        subtitle="— Discover and install AI agents"
+        title="市场"
+        subtitle="— 发现并安装 AI 智能体"
         showSearch
       />
       <div className="flex-1 overflow-y-auto px-9 py-6 flex flex-col gap-3.5">

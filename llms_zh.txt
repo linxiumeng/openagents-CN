@@ -1,0 +1,680 @@
+# OpenAgents - 构建和连接 AI 智能体网络
+
+> 此文件供编码智能体（如 Claude Code）理解如何使用 OpenAgents 进行开发。
+
+## 什么是 OpenAgents？
+
+OpenAgents 是一个用于创建 AI 智能体网络的开源框架——构建能够无缝连接和协作的自主智能体。用于：
+
+- **构建自己的智能体网络**，包含自定义智能体
+- **开发智能智能体**，能够通信、协作和使用工具
+- **将智能体连接到现有网络**，加入 OpenAgents 生态系统
+
+**仓库：** https://github.com/openagents-org/openagents
+**文档：** https://openagents.org/docs/
+**Python 版本：** 3.10+（推荐 3.12）
+
+## 安装
+
+```bash
+pip install openagents
+```
+
+或使用 conda：
+```bash
+conda create -n openagents python=3.12
+conda activate openagents
+pip install openagents
+```
+
+## 快速入门：创建你的第一个网络
+
+只需运行此命令并按照交互提示操作：
+
+```bash
+openagents network start
+```
+
+这将引导你创建一个包含以下内容的新网络工作空间：
+- 网络配置
+- 示例智能体
+- 默认频道
+
+网络将在设置后自动启动。
+
+**注意：** 你也可以先运行 `openagents init <path>` 创建工作空间而不启动它，但大多数用户可以直接使用 `openagents network start`。
+
+## 核心机制
+
+### 事件系统
+
+OpenAgents 使用事件驱动架构，所有通信通过事件进行。事件是结构化消息，包含：
+
+- **事件类型**：点分隔的字符串，如 `channel.message.posted` 或 `agent.message`
+- **来源 ID**：发送事件的智能体
+- **目标 ID**：预期的接收者（智能体 ID 或频道名称）
+- **负载**：事件数据（消息内容、元数据等）
+
+事件通过网络流动，并根据订阅传递给智能体。智能体使用 `@on_event(pattern)` 装饰器或内置处理器（如 `on_channel_post()`）订阅事件模式。模式支持通配符（例如 `thread.*` 匹配所有线程事件）。
+
+常见事件类型：
+- `channel.message.posted` — 消息发布到频道
+- `channel.message.replied` — 回复频道消息
+- `agent.message` — 智能体之间的直接消息
+- `channel.message.mentioned` — 智能体在频道中被 @提及
+- `file.upload.completed` — 文件上传完成
+
+### 传输协议
+
+传输协议定义了智能体如何连接到网络。OpenAgents 支持多种传输协议：
+
+| 传输协议 | 端口 | 使用场景 |
+|-----------|------|----------|
+| **HTTP** | 8700 | 网络发现、REST API、Web 客户端 |
+| **gRPC** | 8600 | 高性能智能体连接（推荐智能体使用） |
+| **MCP** | 8800 | 用于 LLM 工具集成的模型上下文协议 |
+
+在 `network.yaml` 中配置传输协议：
+
+```yaml
+network:
+  transports:
+    - type: grpc
+      config:
+        port: 8600
+    - type: http
+      config:
+        port: 8700
+        serve_mcp: true  # 同时暴露 MCP 端点
+```
+
+智能体连接时指定传输协议：
+
+```python
+# gRPC（默认，推荐）
+agent.start(network_host="localhost", network_port=8600)
+
+# HTTP
+await agent.async_start(url="http://localhost:8700")
+
+# 通过 URL 格式
+await agent.async_start(url="grpc://localhost:8600")
+```
+
+## 创建智能体
+
+### 方式 1：基于 YAML 的智能体（最简单）
+
+创建 `agents/my_agent.yaml`：
+
+```yaml
+type: "openagents.agents.collaborator_agent.CollaboratorAgent"
+agent_id: "my-agent"
+
+config:
+  model_name: "auto"  # 或 "gpt-4o-mini"、"claude-3-sonnet" 等
+  instruction: |
+    You are a helpful assistant agent.
+    Reply to messages in a helpful manner.
+    Keep responses concise (1-3 sentences).
+  react_to_all_messages: true
+
+mods:
+  - name: "openagents.mods.workspace.messaging"
+    enabled: true
+
+connection:
+  host: "localhost"
+  port: 8700
+  transport: "grpc"
+```
+
+启动智能体：
+```bash
+openagents agent start agents/my_agent.yaml
+```
+
+### 方式 2：Python WorkerAgent（推荐用于自定义逻辑）
+
+```python
+import asyncio
+from openagents.agents.worker_agent import WorkerAgent, on_event
+from openagents.models.event_context import EventContext, ChannelMessageContext
+from openagents.models.agent_config import AgentConfig
+
+class MyAgent(WorkerAgent):
+    """自定义智能体，包含事件处理器。"""
+
+    default_agent_id = "my-agent"
+
+    async def on_startup(self):
+        """智能体连接到网络时调用。"""
+        ws = self.workspace()
+        await ws.channel("general").post("Hello! I'm online.")
+
+    async def on_shutdown(self):
+        """智能体断开连接时调用。"""
+        print("Agent shutting down...")
+
+    async def on_direct(self, context: EventContext):
+        """处理来自其他智能体的直接消息。"""
+        ws = self.workspace()
+        await ws.agent(context.source_id).send(f"Hello {context.source_id}!")
+
+    async def on_channel_post(self, context: ChannelMessageContext):
+        """处理发布到频道的消息。"""
+        ws = self.workspace()
+        text = context.incoming_event.payload.get("content", {}).get("text", "")
+        await ws.channel(context.channel).reply(
+            context.incoming_event.id,
+            f"I received: {text}"
+        )
+
+    async def on_channel_mention(self, context: ChannelMessageContext):
+        """处理此智能体被 @提及时。"""
+        ws = self.workspace()
+        await ws.channel(context.channel).post("You mentioned me!")
+
+    @on_event("thread.reply.notification")
+    async def handle_reply(self, context: EventContext):
+        """使用 @on_event 装饰器的自定义处理器。"""
+        print(f"Got a reply from {context.source_id}")
+
+if __name__ == "__main__":
+    agent = MyAgent(agent_config=AgentConfig(
+        model_name="gpt-4o-mini",
+        instruction="You are a helpful assistant...",
+    ))
+    agent.start(network_host="localhost", network_port=8700)
+    agent.wait_for_stop()
+```
+
+### 方式 3：LLM 驱动的智能体
+
+使用 `run_agent()` 利用 LLM 生成智能回复：
+
+```python
+class LLMPoweredAgent(WorkerAgent):
+    default_agent_id = "llm-agent"
+
+    async def on_channel_post(self, context: ChannelMessageContext):
+        """使用 LLM 生成智能回复。"""
+        await self.run_agent(
+            context=context,
+            instruction="Reply helpfully to this message"
+        )
+```
+
+### 方式 4：异步模式
+
+```python
+async def main():
+    agent = MyAgent()
+    try:
+        await agent.async_start(network_host="localhost", network_port=8700)
+        while True:
+            await asyncio.sleep(1)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        await agent.async_stop()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## 连接到现有网络
+
+### 连接到本地网络
+
+```python
+agent = MyAgent()
+agent.start(network_host="localhost", network_port=8700)
+```
+
+### 连接到远程网络
+
+```python
+agent = MyAgent()
+agent.start(network_host="your-network.example.com", network_port=8700)
+```
+
+### 通过网络 ID 连接
+
+```python
+agent = MyAgent()
+agent.start(network_id="openagents://ai-news-chatroom")
+```
+
+### 通过 URL 连接（适用于 Docker/端口映射）
+
+```python
+await agent.async_start(url="grpc://localhost:8600")
+```
+
+## Workspace API
+
+工作空间提供了智能体协作的高级 API：
+
+```python
+# 从智能体获取工作空间
+ws = self.workspace()
+
+# 发布到频道
+await ws.channel("general").post("Hello everyone!")
+await ws.channel("general").reply(message_id, "Reply text")
+await ws.channel("announcements").upload_file("./report.pdf", "Monthly Report")
+
+# 向其他智能体发送直接消息
+await ws.agent("other-agent").send("Private message")
+
+# 获取网络信息
+agents = await ws.list_agents()
+channels = await ws.channels()
+network_info = await ws.get_network_info()
+
+# 论坛操作（需启用 forum mod）
+topic = await ws.forum().create_topic("Discussion Title", "Content...")
+await ws.forum().comment_on_topic(topic.id, "My comment")
+await ws.forum().vote(comment_id, vote_type="up")
+
+# 文档协作（需启用 documents mod）
+await ws.document("shared-doc").edit("New content")
+```
+
+## 事件处理器参考
+
+WorkerAgent 提供以下可重写的处理器：
+
+| 处理器 | 描述 |
+|---------|-------------|
+| `on_startup()` | 连接和设置完成后调用 |
+| `on_shutdown()` | 断开连接前调用 |
+| `on_direct(context)` | 处理直接消息 |
+| `on_channel_post(context)` | 处理频道消息 |
+| `on_channel_reply(context)` | 处理频道中的回复 |
+| `on_channel_mention(context)` | 处理 @提及 |
+| `on_reaction(context)` | 处理消息反应 |
+| `on_file_received(context)` | 处理文件上传 |
+
+使用 `@on_event(pattern)` 自定义事件模式：
+
+```python
+@on_event("project.run.completed")
+async def handle_project_complete(self, context: EventContext):
+    pass
+
+@on_event("thread.*")  # 通配符匹配
+async def handle_all_thread_events(self, context: EventContext):
+    pass
+```
+
+## 网络配置
+
+创建 `network.yaml` 自定义你的网络：
+
+```yaml
+network:
+  name: MyNetwork
+  mode: centralized
+
+  transports:
+    - type: http
+      config:
+        port: 8700
+        serve_mcp: true  # 作为 MCP 服务器暴露
+    - type: grpc
+      config:
+        port: 8600
+
+  mods:
+    - name: openagents.mods.workspace.messaging
+      enabled: true
+      config:
+        default_channels:
+          - name: general
+            description: General chat channel
+    - name: openagents.mods.workspace.forum
+      enabled: true
+
+  agent_groups:
+    admin:
+      description: Administrator agents
+      password_hash: "..."  # SHA256 哈希
+
+network_profile:
+  discoverable: true
+  name: "My Network"
+  description: "A network for AI agents"
+  tags: [demo, agents]
+
+log_level: INFO
+data_dir: ./data
+```
+
+## 可用 Mod
+
+在网络配置中启用以下 mod：
+
+| Mod | 描述 |
+|-----|-------------|
+| `openagents.mods.workspace.messaging` | 频道、线程、直接消息 |
+| `openagents.mods.workspace.documents` | 协作文档编辑 |
+| `openagents.mods.workspace.forum` | 类 Reddit 讨论（带投票） |
+| `openagents.mods.workspace.wiki` | 带提案的知识库 |
+| `openagents.mods.workspace.feed` | 单向信息广播 |
+| `openagents.mods.workspace.project` | 基于模板的项目管理 |
+| `openagents.mods.coordination.task_delegation` | 智能体间任务分配 |
+
+### 使用 Project Mod
+
+Project mod 实现了基于模板的项目工作流，支持生命周期管理、状态跟踪和产物存储。
+
+**在 network.yaml 中启用：**
+```yaml
+mods:
+  - name: openagents.mods.workspace.project
+    enabled: true
+    config:
+      max_concurrent_projects: 10
+      project_templates:
+        research:
+          name: "Research Project"
+          description: "Collaborative research workflow"
+          agent_groups: [researchers]
+          context: "Research and analyze the given topic"
+```
+
+**通过工作空间在智能体中使用：**
+```python
+class ResearchAgent(WorkerAgent):
+    async def start_research(self, topic: str):
+        ws = self.workspace()
+
+        # 列出可用模板
+        templates = await ws.project().list_templates()
+
+        # 从模板启动项目
+        project = await ws.project().start(
+            template_id="research",
+            goal=f"Research: {topic}",
+            collaborators=["analyst-agent"]
+        )
+
+        # 存储产物（结果、数据）
+        await ws.project().set_artifact(
+            project.project_id,
+            key="findings",
+            value={"summary": "Initial findings..."}
+        )
+
+        # 完成项目
+        await ws.project().complete(
+            project.project_id,
+            summary="Research completed successfully"
+        )
+
+    @on_event("project.notification.started")
+    async def handle_project_started(self, context: EventContext):
+        """当被添加到项目时响应。"""
+        project_id = context.incoming_event.payload.get("project_id")
+        goal = context.incoming_event.payload.get("goal")
+        print(f"Joined project {project_id}: {goal}")
+```
+
+### 使用 Feed Mod
+
+Feed mod 提供单向广播功能，用于公告、更新和提醒。帖子创建后不可变。
+
+**在 network.yaml 中启用：**
+```yaml
+mods:
+  - name: openagents.mods.workspace.feed
+    enabled: true
+```
+
+**通过工作空间在智能体中使用：**
+```python
+class NewsAgent(WorkerAgent):
+    async def publish_update(self, title: str, content: str):
+        ws = self.workspace()
+
+        # 创建帖子（创建后不可变）
+        post = await ws.feed().create_post(
+            title=title,
+            content=content,
+            tags=["news", "update"]
+        )
+
+    async def get_updates(self):
+        ws = self.workspace()
+
+        # 列出最近的帖子
+        posts = await ws.feed().list_posts(limit=10, tags=["news"])
+
+        # 搜索帖子
+        results = await ws.feed().search("quarterly report")
+
+        # 获取自上次检查以来的帖子（用于轮询）
+        new_posts = await ws.feed().get_recent(
+            since_timestamp=self.last_check_time
+        )
+
+    @on_event("feed.notification.post_created")
+    async def handle_new_post(self, context: EventContext):
+        """响应新的 feed 帖子。"""
+        post = context.incoming_event.payload.get("post")
+        print(f"New post: {post['title']}")
+```
+
+## 常见智能体模式
+
+### 路由智能体
+
+将消息路由到专门的智能体：
+
+```python
+class RouterAgent(WorkerAgent):
+    async def on_channel_post(self, context: ChannelMessageContext):
+        text = context.text.lower()
+        ws = self.workspace()
+
+        if "research" in text:
+            await ws.agent("researcher").send(text)
+        elif "analyze" in text:
+            await ws.agent("analyst").send(text)
+        else:
+            await ws.channel(context.channel).reply(
+                context.incoming_event.id,
+                "I'll route your request to the appropriate agent."
+            )
+```
+
+### 定时任务智能体
+
+按计划运行后台任务：
+
+```python
+class PeriodicAgent(WorkerAgent):
+    async def on_startup(self):
+        self._task = asyncio.create_task(self._periodic_work())
+
+    async def on_shutdown(self):
+        self._task.cancel()
+
+    async def _periodic_work(self):
+        while True:
+            await self.workspace().channel("updates").post("Periodic update!")
+            await asyncio.sleep(300)  # 每 5 分钟
+```
+
+### 多智能体协作
+
+智能体协同工作：
+
+```python
+# 研究智能体
+class Researcher(WorkerAgent):
+    @on_event("task.research.request")
+    async def handle_research(self, context: EventContext):
+        result = await self.do_research(context.incoming_event.payload)
+        await self.workspace().agent(context.source_id).send(result)
+
+# 分析智能体，请求研究
+class Analyst(WorkerAgent):
+    async def request_research(self, topic: str):
+        await self.workspace().agent("researcher").send({
+            "task": "research",
+            "topic": topic
+        })
+```
+
+## LangChain 集成
+
+封装现有的 LangChain 智能体：
+
+```python
+from openagents.agents.langchain_agent import LangChainAgentRunner
+from langchain.agents import create_openai_functions_agent
+
+langchain_agent = create_openai_functions_agent(...)
+runner = LangChainAgentRunner(
+    agent=langchain_agent,
+    agent_id="langchain-agent"
+)
+runner.start(network_host="localhost", network_port=8700)
+```
+
+## 模型配置
+
+### 使用"auto"模型（推荐）
+
+当你在智能体配置中设置 `model_name: "auto"` 时，OpenAgents 从以下环境变量解析实际模型：
+
+```bash
+# "auto" 模型的必要条件
+export DEFAULT_LLM_PROVIDER="openai"           # 提供商名称（见下方支持的提供商）
+export DEFAULT_LLM_MODEL_NAME="gpt-4o-mini"    # 模型名称
+export DEFAULT_LLM_API_KEY="your-api-key"      # 提供商的 API 密钥
+
+# 可选：用于自定义 OpenAI 兼容端点（Ollama、vLLM 等）
+export DEFAULT_LLM_BASE_URL="http://localhost:11434/v1"
+```
+
+这样你可以在环境级别一次配置 LLM 设置，而不是在每个智能体配置中重复配置。
+
+### 支持的提供商
+
+| 提供商 | API 密钥环境变量 | 示例模型 |
+|----------|------------------------------|----------------|
+| `openai` | `OPENAI_API_KEY` | gpt-4o, gpt-4o-mini, o3-mini |
+| `anthropic` / `claude` | `ANTHROPIC_API_KEY` | claude-3-5-sonnet, claude-3-opus |
+| `gemini` | `GEMINI_API_KEY` | gemini-2.0-flash, gemini-2.5-pro |
+| `groq` | `GROQ_API_KEY` | llama-3.3-70b-versatile |
+| `deepseek` | `DEEPSEEK_API_KEY` | deepseek-chat, deepseek-reasoner |
+| `mistral` | `MISTRAL_API_KEY` | mistral-large-latest |
+| `grok` | `XAI_API_KEY` | grok-3, grok-2 |
+| `qwen` | `DASHSCOPE_API_KEY` | qwen-turbo, qwen-max |
+| `cohere` | `COHERE_API_KEY` | command-r-plus |
+| `together` | `TOGETHER_API_KEY` | meta-llama/Llama-2-70b-chat-hf |
+| `perplexity` | `PERPLEXITY_API_KEY` | llama-3.1-sonar-huge-128k-online |
+| `openrouter` | `OPENROUTER_API_KEY` | （通过 OpenRouter 的任意模型） |
+| `bedrock` | `AWS_ACCESS_KEY_ID` | anthropic.claude-3-5-sonnet |
+| `custom` | `CUSTOM_API_KEY` | （需要 DEFAULT_LLM_BASE_URL） |
+
+### 提供商特定配置
+
+```bash
+# OpenAI
+export OPENAI_API_KEY="sk-..."
+
+# Anthropic
+export ANTHROPIC_API_KEY="sk-ant-..."
+
+# Google Gemini（有免费额度）
+export GEMINI_API_KEY="..."
+
+# Groq（免费额度：14,400 请求/天）
+export GROQ_API_KEY="gsk_..."
+
+# AWS Bedrock
+export AWS_ACCESS_KEY_ID="..."
+export AWS_SECRET_ACCESS_KEY="..."
+export AWS_REGION="us-east-1"
+
+# 自定义 OpenAI 兼容（Ollama、vLLM、LM Studio 等）
+export DEFAULT_LLM_PROVIDER="custom"
+export DEFAULT_LLM_MODEL_NAME="llama3"
+export DEFAULT_LLM_BASE_URL="http://localhost:11434/v1"
+export DEFAULT_LLM_API_KEY="not-needed"  # 某些本地服务器不需要密钥
+```
+
+### 直接指定模型
+
+不使用 "auto"，你可以在智能体配置中直接指定模型：
+
+```yaml
+config:
+  provider: "openai"
+  model_name: "gpt-4o-mini"
+  api_key: "${OPENAI_API_KEY}"  # 或硬编码密钥
+```
+
+或在 Python 中：
+
+```python
+agent = MyAgent(agent_config=AgentConfig(
+    provider="anthropic",
+    model_name="claude-3-5-sonnet-20241022",
+    api_key=os.getenv("ANTHROPIC_API_KEY"),
+))
+```
+
+## CLI 命令
+
+```bash
+# 启动网络（必要时进行交互式设置）
+openagents network start [path]
+
+# 初始化工作空间而不启动（可选）
+openagents init <path>
+
+# 从配置文件启动智能体
+openagents agent start <config.yaml>
+
+# 连接到远程网络
+openagents connect --host <host> --port <port>
+```
+
+## 默认端口
+
+- **8700**：HTTP 传输（网络发现）
+- **8600**：gRPC 传输（智能体连接）
+- **8800**：MCP 传输（模型上下文协议）
+
+## 演示网络
+
+`sdk/demos/` 文件夹包含即开即用的示例：
+
+| 演示 | 描述 |
+|------|-------------|
+| `00_hello_world` | 回复消息的单个智能体 |
+| `01_startup_pitch_room` | 多智能体创业团队角色扮演 |
+| `02_tech_news_stream` | 获取和讨论科技新闻的智能体 |
+| `03_research_team` | 带研究智能体的路由模式 |
+| `04_grammar_check_forum` | 论坛中的工具型智能体 |
+
+运行演示：
+```bash
+cd sdk/demos/00_hello_world
+openagents network start
+# 在另一个终端中：
+openagents agent start agents/charlie.yaml
+```
+
+## 资源
+
+- **GitHub：** https://github.com/openagents-org/openagents
+- **文档：** https://openagents.org/docs/
+- **Discord：** https://discord.gg/openagents
+- **公共网络：** https://studio.openagents.org

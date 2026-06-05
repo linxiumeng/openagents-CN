@@ -40,8 +40,8 @@ step()  { echo ""; info "$*"; }
 
 # --- Header ---
 echo ""
-echo "${BOLD}  OpenAgents Installer${RESET}  ${DIM}v${VERSION}${RESET}"
-echo "${DIM}  Multi-agent orchestration for your local machine${RESET}"
+echo "${BOLD}  OpenAgents 安装程序${RESET}  ${DIM}v${VERSION}${RESET}"
+echo "${DIM}  本地多智能体编排工具${RESET}"
 echo ""
 
 # --- Detect OS ---
@@ -56,7 +56,7 @@ esac
 # =========================================================================
 # Step 1: Node.js
 # =========================================================================
-step "Checking Node.js ${MIN_NODE_MAJOR}+..."
+step "正在检查 Node.js ${MIN_NODE_MAJOR}+..."
 
 find_node() {
     for cmd in node nodejs; do
@@ -76,16 +76,16 @@ if NODE=$(find_node); then
     node_version=$($NODE --version)
     ok "Node.js $node_version ($NODE)"
 else
-    warn "Node.js ${MIN_NODE_MAJOR}+ not found — installing..."
+    warn "未找到 Node.js ${MIN_NODE_MAJOR}+ — 正在安装..."
 
     case "$OS" in
         macos)
             if command -v brew >/dev/null 2>&1; then
-                info "Installing Node.js via Homebrew..."
+                info "正在通过 Homebrew 安装 Node.js..."
                 brew install node 2>/dev/null || true
             fi
             if ! command -v node >/dev/null 2>&1; then
-                info "Downloading Node.js portable..."
+                info "正在下载 Node.js 便携版..."
                 if [ "$ARCH" = "arm64" ]; then
                     NODE_URL="https://nodejs.org/dist/v22.16.0/node-v22.16.0-darwin-arm64.tar.gz"
                 else
@@ -98,14 +98,14 @@ else
             ;;
         linux)
             if command -v apt-get >/dev/null 2>&1; then
-                info "Installing Node.js via apt..."
+                info "正在通过 apt 安装 Node.js..."
                 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - 2>/dev/null || true
                 sudo apt-get install -y -qq nodejs 2>/dev/null || true
             elif command -v dnf >/dev/null 2>&1; then
-                info "Installing Node.js via dnf..."
+                info "正在通过 dnf 安装 Node.js..."
                 sudo dnf install -y nodejs 2>/dev/null || true
             else
-                info "Downloading Node.js portable..."
+                info "正在下载 Node.js 便携版..."
                 NODE_URL="https://nodejs.org/dist/v22.16.0/node-v22.16.0-linux-x64.tar.xz"
                 mkdir -p "$HOME/.openagents/nodejs"
                 curl -fsSL "$NODE_URL" | tar xJ -C "$HOME/.openagents/nodejs" --strip-components=1
@@ -113,19 +113,19 @@ else
             fi
             ;;
         windows)
-            fail "On Windows, please install Node.js from https://nodejs.org or use install.ps1"
+            fail "在 Windows 上，请从 https://nodejs.org 安装 Node.js 或使用 install.ps1"
             ;;
         *)
-            fail "Unsupported OS. Please install Node.js ${MIN_NODE_MAJOR}+ manually: https://nodejs.org"
+            fail "不支持的操作系统。请手动安装 Node.js ${MIN_NODE_MAJOR}+：https://nodejs.org"
             ;;
     esac
 
     if NODE=$(find_node); then
         node_version=$($NODE --version)
-        ok "Node.js $node_version installed"
+        ok "Node.js $node_version 已安装"
     else
-        fail "Node.js installation did not succeed.
-  Please install Node.js ${MIN_NODE_MAJOR}+ manually: https://nodejs.org"
+        fail "Node.js 安装失败。
+  请手动安装 Node.js ${MIN_NODE_MAJOR}+：https://nodejs.org"
     fi
 fi
 
@@ -136,7 +136,7 @@ PORTABLE_NODE_VER="v22.16.0"
 if [ -x "$PORTABLE_NODE" ]; then
     portable_major=$("$PORTABLE_NODE" -e "process.stdout.write(String(process.versions.node.split('.')[0]))" 2>/dev/null || echo 0)
     if [ "$portable_major" -lt 22 ]; then
-        info "Upgrading portable Node.js to $PORTABLE_NODE_VER..."
+        info "正在升级便携版 Node.js 到 $PORTABLE_NODE_VER..."
         _install_portable=1
     fi
 elif [ ! -x "$PORTABLE_NODE" ]; then
@@ -161,7 +161,7 @@ if [ "${_install_portable:-}" = "1" ]; then
             ;;
     esac
     if [ -x "$PORTABLE_NODE" ]; then
-        ok "Portable Node.js $PORTABLE_NODE_VER installed"
+        ok "便携版 Node.js $PORTABLE_NODE_VER 已安装"
     fi
 fi
 export PATH="$HOME/.openagents/nodejs/bin:$PATH"
@@ -169,7 +169,7 @@ export PATH="$HOME/.openagents/nodejs/bin:$PATH"
 # =========================================================================
 # Step 2: Install/upgrade openagents
 # =========================================================================
-step "Installing OpenAgents CLI..."
+step "正在安装 OpenAgents CLI..."
 
 NPM="npm"
 if ! command -v npm >/dev/null 2>&1; then
@@ -185,8 +185,8 @@ fi
 # Check if already installed
 if command -v openagents >/dev/null 2>&1; then
     current=$(openagents --version 2>/dev/null | head -1 || echo "unknown")
-    ok "openagents already installed ($current)"
-    info "Upgrading to latest..."
+    ok "openagents 已安装 ($current)"
+    info "正在升级到最新版..."
 fi
 
 # Install to ~/.openagents/nodejs/node_modules/ via direct tarball (avoids npm --prefix pruning)
@@ -232,7 +232,7 @@ if [ -n "$LATEST_VER" ] && [ "$LATEST_VER" != "$INSTALLED_VER" ]; then
         chmod +x "$BIN_SHIM_DIR/$name"
     done
 elif [ -n "$INSTALLED_VER" ]; then
-    info "Already up to date ($INSTALLED_VER)"
+    info "已是最新版 ($INSTALLED_VER)"
 fi
 
 # Portable node at ~/.openagents/nodejs/bin/ is always installed above.
@@ -253,16 +253,16 @@ if command -v openagents >/dev/null 2>&1; then
     # Use known version (already fetched above) — most reliable
     _oa_ver="${LATEST_VER:-${INSTALLED_VER:-unknown}}"
     OA_BIN=$(command -v openagents)
-    ok "openagents v${_oa_ver} installed"
+    ok "openagents v${_oa_ver} 已安装"
 else
-    fail "Failed to install openagents.
-  Try manually: npm install -g $NPM_PACKAGE"
+    fail "openagents 安装失败。
+  请手动执行：npm install -g $NPM_PACKAGE"
 fi
 
 # =========================================================================
 # Step 3: Detect local AI agents
 # =========================================================================
-step "Detecting local AI agents..."
+step "正在检测本地 AI 智能体..."
 
 agent_count=0
 
@@ -275,7 +275,7 @@ detect_agent() {
         ok "$name${ver:+ ($ver)}"
         agent_count=$((agent_count + 1))
     else
-        echo "  ${DIM}$name — not installed${RESET}"
+        echo "  ${DIM}$name — 未安装${RESET}"
     fi
 }
 
@@ -294,7 +294,7 @@ detect_agent "Hermes Agent"   hermes
 # Done
 # =========================================================================
 echo ""
-echo "${BOLD}${GREEN}  Installation complete!${RESET}"
+echo "${BOLD}${GREEN}  安装完成！${RESET}"
 echo ""
 
 # Auto-configure PATH if openagents isn't on the user's original PATH
@@ -321,11 +321,11 @@ if [ -n "$NEEDS_PATH" ]; then
         if [ -f "$rc" ]; then
             if ! grep -qF "$NEEDS_PATH" "$rc" 2>/dev/null; then
                 echo "" >> "$rc"
-                echo "# Added by OpenAgents installer" >> "$rc"
+                echo "# 由 OpenAgents 安装程序添加" >> "$rc"
                 echo "$PATH_LINE" >> "$rc"
                 ADDED_TO="$rc"
             else
-                ADDED_TO="$rc (already configured)"
+                ADDED_TO="$rc（已配置）"
             fi
             break
         fi
@@ -333,24 +333,24 @@ if [ -n "$NEEDS_PATH" ]; then
 
     # If no rc file found, create .profile
     if [ -z "$ADDED_TO" ]; then
-        echo "# Added by OpenAgents installer" > "$HOME/.profile"
+        echo "# 由 OpenAgents 安装程序添加" > "$HOME/.profile"
         echo "$PATH_LINE" >> "$HOME/.profile"
-        ADDED_TO="$HOME/.profile (created)"
+        ADDED_TO="$HOME/.profile（已创建）"
     fi
 
-    ok "PATH configured in ${ADDED_TO}"
+    ok "PATH 已配置在 ${ADDED_TO}"
     echo ""
-    echo "  ${DIM}Restart your terminal, or run:${RESET}"
+    echo "  ${DIM}请重启终端，或执行：${RESET}"
     echo "    ${BOLD}source ${ADDED_TO%% *}${RESET}"
     echo ""
 fi
 
-echo "  Get started:"
+echo "  开始使用："
 echo ""
-echo "    ${BOLD}agn${RESET}                         Launch the interactive dashboard"
+echo "    ${BOLD}agn${RESET}                         启动交互式仪表盘"
 echo ""
 
 if [ "$agent_count" -eq 0 ]; then
-    echo "  ${DIM}No AI agents found. The dashboard will help you install one.${RESET}"
+    echo "  ${DIM}未发现 AI 智能体。仪表盘将帮助你安装一个。${RESET}"
     echo ""
 fi

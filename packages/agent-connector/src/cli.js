@@ -71,7 +71,7 @@ async function cmdUp(connector, flags) {
   } else {
     const pid = connector.getDaemonPid();
     if (pid) {
-      print(`Daemon already running (PID ${pid})`);
+      print(`守护进程已在运行 (PID ${pid})`);
       return;
     }
     // Daemonize
@@ -84,23 +84,23 @@ async function cmdUp(connector, flags) {
 async function cmdDown(connector) {
   const stopped = connector.stopDaemon();
   if (stopped) {
-    print('Daemon stopped');
+    print('守护进程已停止');
   } else {
-    print('Daemon is not running');
+    print('守护进程未运行');
   }
 }
 
 async function cmdStatus(connector) {
   const pid = connector.getDaemonPid();
   if (!pid) {
-    print('Daemon is not running');
+    print('守护进程未运行');
   } else {
-    print(`Daemon running (PID ${pid})`);
+    print(`守护进程运行中 (PID ${pid})`);
   }
 
   const agents = connector.listAgents();
   if (agents.length === 0) {
-    print('\nNo agents configured. Run: agn create <name> --type <type>');
+    print('\n未配置智能体。运行：agn create <名称> --type <类型>');
     return;
   }
 
@@ -109,10 +109,10 @@ async function cmdStatus(connector) {
     const s = status[a.name] || {};
     const state = s.state || (pid ? 'stopped' : '-');
     const restarts = s.restarts || 0;
-    return [a.name, a.type, state, a.network || '(local)', restarts > 0 ? `${restarts}` : ''];
+    return [a.name, a.type, state, a.network || '(本地)', restarts > 0 ? `${restarts}` : ''];
   });
   print('');
-  table(rows, ['NAME', 'TYPE', 'STATE', 'NETWORK', 'RESTARTS']);
+  table(rows, ['名称', '类型', '状态', '网络', '重启次数']);
 }
 
 async function cmdCreate(connector, flags, positional) {
@@ -131,89 +131,89 @@ async function cmdCreate(connector, flags, positional) {
     // Without a workspace connection they will not appear in the Workspace Dashboard.
     const created = connector.config.getAgent(name);
     if (created && !created.network) {
-      print(`Created local agent: ${name} (type: ${type})`);
+      print(`已创建本地智能体：${name}（类型：${type}）`);
       print('');
-      print('This agent is local-only and will not appear in Workspace Dashboard yet.');
+      print('此智能体仅在本地运行，暂不会出现在工作空间仪表盘中。');
       print('');
-      print('To connect it to a Workspace, run:');
+      print('要将其连接到工作空间，请运行：');
       print(`  agn connect ${name} <workspace-token>`);
     } else {
-      print(`Agent '${name}' created (type: ${type})`);
+      print(`智能体 '${name}' 已创建（类型：${type}）`);
     }
 
     if (!connector.isInstalled(type)) {
       if (!flags.install) {
-        print(`Runtime '${type}' is not installed. Run: agn install ${type}`);
+        print(`运行时 '${type}' 未安装。运行：agn install ${type}`);
         return;
       }
 
-      print(`Installing ${type}...`);
+      print(`正在安装 ${type}...`);
       try {
         await connector.install(type);
-        print(`${type} installed`);
+        print(`${type} 已安装`);
       } catch (e) {
-        print(`Warning: install failed: ${e.message}`);
+        print(`警告：安装失败：${e.message}`);
       }
     }
   } catch (e) {
-    print(`Error: ${e.message}`);
+    print(`错误：${e.message}`);
     process.exitCode = 1;
   }
 }
 
 async function cmdRemove(connector, _flags, positional) {
   const name = positional[0];
-  if (!name) { print('Usage: agn remove <name>'); return; }
+  if (!name) { print('用法：agn remove <名称>'); return; }
   connector.removeAgent(name);
   try { connector.sendDaemonCommand('reload'); } catch {}
-  print(`Agent '${name}' removed`);
+  print(`智能体 '${name}' 已移除`);
 }
 
 async function cmdStart(connector, _flags, positional) {
   const name = positional[0];
-  if (!name) { print('Usage: agn start <name>'); return; }
+  if (!name) { print('用法：agn start <名称>'); return; }
   connector.sendDaemonCommand(`restart:${name}`);
-  print(`Sent start command for '${name}'`);
+  print(`已发送启动命令：'${name}'`);
 }
 
 async function cmdStop(connector, _flags, positional) {
   const name = positional[0];
-  if (!name) { print('Usage: agn stop <name>'); return; }
+  if (!name) { print('用法：agn stop <名称>'); return; }
   connector.sendDaemonCommand(`stop:${name}`);
-  print(`Sent stop command for '${name}'`);
+  print(`已发送停止命令：'${name}'`);
 }
 
 async function cmdInstall(connector, _flags, positional) {
   const type = positional[0];
-  if (!type) { print('Usage: agn install <type>'); return; }
+  if (!type) { print('用法：agn install <类型>'); return; }
 
   if (connector.isInstalled(type)) {
-    print(`${type} is already installed`);
+    print(`${type} 已安装`);
     return;
   }
 
-  print(`Installing ${type}...`);
+  print(`正在安装 ${type}...`);
   try {
     const result = await connector.install(type);
-    print(`${type} installed successfully`);
+    print(`${type} 安装成功`);
     if (result.output) print(result.output);
   } catch (e) {
-    print(`Error: ${e.message}`);
+    print(`错误：${e.message}`);
     process.exitCode = 1;
   }
 }
 
 async function cmdUninstall(connector, _flags, positional) {
   const type = positional[0];
-  if (!type) { print('Usage: agn uninstall <type>'); return; }
+  if (!type) { print('用法：agn uninstall <类型>'); return; }
 
-  print(`Uninstalling ${type}...`);
+  print(`正在卸载 ${type}...`);
   try {
     const result = await connector.uninstall(type);
-    print(`${type} uninstalled`);
+    print(`${type} 已卸载`);
     if (result.output) print(result.output);
   } catch (e) {
-    print(`Error: ${e.message}`);
+    print(`错误：${e.message}`);
     process.exitCode = 1;
   }
 }
@@ -240,29 +240,29 @@ async function cmdSearch(connector, flags, positional) {
   }
 
   if (catalog.length === 0) {
-    print(query ? `No agents matching '${query}'` : 'No agents in catalog');
+    print(query ? `未找到匹配 '${query}' 的智能体` : '目录中暂无智能体');
     return;
   }
 
   const rows = catalog.map((e) => [
     e.name,
     e.label || e.name,
-    e.installed ? 'installed' : '',
+    e.installed ? '已安装' : '',
     (e.description || '').slice(0, 50),
   ]);
-  table(rows, ['NAME', 'LABEL', 'STATUS', 'DESCRIPTION']);
+  table(rows, ['名称', '标签', '状态', '描述']);
 }
 
 async function cmdList(connector) {
   const agents = connector.listAgents();
   if (agents.length === 0) {
-    print('No agents configured');
+    print('未配置智能体');
     return;
   }
   const rows = agents.map((a) => [
-    a.name, a.type, a.role, a.network || '(local)',
+    a.name, a.type, a.role, a.network || '(本地)',
   ]);
-  table(rows, ['NAME', 'TYPE', 'ROLE', 'NETWORK']);
+  table(rows, ['名称', '类型', '角色', '网络']);
 }
 
 async function cmdRuntimes(connector) {
@@ -278,7 +278,7 @@ async function cmdRuntimes(connector) {
 
   const installed = catalog.filter((e) => e.installed);
   if (installed.length === 0) {
-    print('No agent runtimes installed');
+    print('未安装智能体运行时');
     return;
   }
 
@@ -286,7 +286,7 @@ async function cmdRuntimes(connector) {
     const binary = connector.installer.which(e.name) || '-';
     return [e.name, e.label || e.name, binary];
   });
-  table(rows, ['NAME', 'LABEL', 'PATH']);
+  table(rows, ['名称', '标签', '路径']);
 }
 
 async function cmdConnect(connector, flags, positional) {
@@ -309,15 +309,15 @@ async function cmdConnect(connector, flags, positional) {
     // No token supplied and none in the environment. Never prompt — keep
     // CI / non-interactive environments from hanging. Print a helpful error
     // explaining why the agent stays invisible and how to fix it.
-    print('Workspace token is required.');
-    print('Local-only agents do not appear in Workspace Dashboard until connected.');
-    print('Run:');
+    print('需要工作空间 Token。');
+    print('纯本地智能体在连接前不会出现在工作空间仪表盘中。');
+    print('请运行：');
     print(`  agn connect ${name} <workspace-token>`);
     process.exitCode = 1;
     return;
   }
 
-  print(`Resolving workspace token...`);
+  print(`正在解析工作空间 Token...`);
   try {
     const info = await connector.resolveToken(token);
     const slug = info.slug || info.workspace_id;
@@ -334,25 +334,25 @@ async function cmdConnect(connector, flags, positional) {
 
     // Connect agent
     connector.connectWorkspace(name, slug);
-    print(`'${name}' connected to workspace '${wsName}'`);
+    print(`'${name}' 已连接到工作空间 '${wsName}'`);
 
     // Signal daemon reload
     const pid = connector.getDaemonPid();
     if (pid) {
       connector.sendDaemonCommand(`restart:${name}`);
-      print('Daemon notified');
+      print('已通知守护进程');
     }
   } catch (e) {
-    print(`Error: ${e.message}`);
+    print(`错误：${e.message}`);
     process.exitCode = 1;
   }
 }
 
 async function cmdDisconnect(connector, _flags, positional) {
   const name = positional[0];
-  if (!name) { print('Usage: agn disconnect <agent-name>'); return; }
+  if (!name) { print('用法：agn disconnect <智能体名称>'); return; }
   connector.disconnectWorkspace(name);
-  print(`'${name}' disconnected from workspace`);
+  print(`'${name}' 已断开工作空间连接`);
 
   const pid = connector.getDaemonPid();
   if (pid) {
@@ -373,10 +373,10 @@ async function cmdAutostart(connector, flags) {
   const autostart = require('./autostart');
   if (flags.disable) {
     autostart.disable();
-    print('Autostart disabled.');
+    print('自动启动已禁用。');
   } else {
     const result = autostart.enable(connector._config ? connector._config.configDir : require('path').join(require('os').homedir(), '.openagents'));
-    print(`Autostart enabled.${result.path ? ` Config: ${result.path}` : ''}`);
+    print(`自动启动已启用。${result.path ? ` 配置：${result.path}` : ''}`);
   }
 }
 
@@ -386,16 +386,16 @@ async function cmdWorkspace(connector, flags, positional) {
 
   switch (sub) {
     case 'create': {
-      const name = subArgs[0] || flags.name || 'My Workspace';
-      print(`Creating workspace '${name}'...`);
+      const name = subArgs[0] || flags.name || '我的工作空间';
+      print(`正在创建工作空间 '${name}'...`);
       try {
         const result = await connector.createWorkspace({ name });
-        print(`Workspace created: ${result.name}`);
+        print(`工作空间已创建：${result.name}`);
         print(`  Slug:  ${result.slug}`);
         print(`  Token: ${result.token}`);
         print(`  URL:   ${result.url}`);
       } catch (e) {
-        print(`Error: ${e.message}`);
+        print(`错误：${e.message}`);
         process.exitCode = 1;
       }
       break;
@@ -403,7 +403,7 @@ async function cmdWorkspace(connector, flags, positional) {
 
     case 'join': {
       const token = subArgs[0] || flags.token;
-      if (!token) { print('Usage: agn workspace join <token>'); return; }
+      if (!token) { print('用法：agn workspace join <Token>'); return; }
       try {
         const info = await connector.resolveToken(token);
         connector.config.addNetwork({
@@ -413,9 +413,9 @@ async function cmdWorkspace(connector, flags, positional) {
           endpoint: info.endpoint || connector.workspace.endpoint,
           token,
         });
-        print(`Joined workspace '${info.name || info.slug}'`);
+        print(`已加入工作空间 '${info.name || info.slug}'`);
       } catch (e) {
-        print(`Error: ${e.message}`);
+        print(`错误：${e.message}`);
         process.exitCode = 1;
       }
       break;
@@ -425,11 +425,11 @@ async function cmdWorkspace(connector, flags, positional) {
     default: {
       const workspaces = connector.listWorkspaces();
       if (workspaces.length === 0) {
-        print('No workspaces configured');
+        print('未配置工作空间');
         return;
       }
       const rows = workspaces.map((w) => [w.slug, w.name, w.endpoint || '-']);
-      table(rows, ['SLUG', 'NAME', 'ENDPOINT']);
+      table(rows, ['SLUG', '名称', '端点']);
       break;
     }
   }
@@ -437,17 +437,17 @@ async function cmdWorkspace(connector, flags, positional) {
 
 async function cmdEnv(connector, flags, positional) {
   const type = positional[0];
-  if (!type) { print('Usage: agn env <type> [--set KEY=VALUE]'); return; }
+  if (!type) { print('用法：agn env <类型> [--set KEY=VALUE]'); return; }
 
   const setVal = flags.set;
   if (setVal) {
     const eq = setVal.indexOf('=');
-    if (eq < 1) { print('Usage: --set KEY=VALUE'); return; }
+    if (eq < 1) { print('用法：--set KEY=VALUE'); return; }
     const key = setVal.slice(0, eq);
     const val = setVal.slice(eq + 1);
     connector.saveAgentEnv(type, { [key]: val });
     try { connector.sendDaemonCommand('reload'); } catch {}
-    print(`Saved ${key} for ${type}`);
+    print(`已保存 ${type} 的 ${key}`);
     return;
   }
 
@@ -458,13 +458,13 @@ async function cmdEnv(connector, flags, positional) {
   if (fields.length > 0) {
     for (const field of fields) {
       const val = env[field.name];
-      const display = field.password && val ? '***' : (val || '(not set)');
-      print(`  ${field.name}: ${display}  ${field.required ? '(required)' : ''}`);
+      const display = field.password && val ? '***' : (val || '(未设置)');
+      print(`  ${field.name}: ${display}  ${field.required ? '(必填)' : ''}`);
     }
   } else {
     const entries = Object.entries(env);
     if (entries.length === 0) {
-      print(`No env vars configured for ${type}`);
+      print(`${type} 未配置环境变量`);
     } else {
       for (const [k, v] of entries) {
         print(`  ${k}: ${v}`);
@@ -481,18 +481,18 @@ async function cmdToolMode(connector, _flags, positional) {
   if (first === '--all') {
     const targetMode = second;
     if (!targetMode || (targetMode !== 'mcp' && targetMode !== 'skills')) {
-      print("Usage: agn tool-mode --all <mcp|skills>");
+      print("用法：agn tool-mode --all <mcp|skills>");
       process.exitCode = 1;
       return;
     }
     const agents = connector.config.getAgents();
-    if (agents.length === 0) { print('No agents configured'); return; }
+    if (agents.length === 0) { print('未配置智能体'); return; }
     for (const a of agents) {
       connector.config.updateAgent(a.name, { tool_mode: targetMode });
       print(`  ${a.name}: ${a.tool_mode || 'skills'} → ${targetMode}`);
     }
     try { connector.sendDaemonCommand('reload'); } catch {}
-    print(`\nSet all ${agents.length} agent(s) to '${targetMode}' mode.`);
+    print(`\n已将 ${agents.length} 个智能体设置为 '${targetMode}' 模式。`);
     return;
   }
 
@@ -500,38 +500,38 @@ async function cmdToolMode(connector, _flags, positional) {
     // Show tool mode for all agents
     const agents = connector.config.getAgents();
     if (agents.length === 0) {
-      print('No agents configured');
+      print('未配置智能体');
       return;
     }
     for (const a of agents) {
       print(`  ${a.name}: ${a.tool_mode || 'skills'}`);
     }
-    print('\nUsage: agn tool-mode <agent|--all> <mcp|skills>');
+    print('\n用法：agn tool-mode <智能体|--all> <mcp|skills>');
     return;
   }
 
   if (!second) {
     // Show tool mode for specific agent
     const agent = connector.config.getAgent(first);
-    if (!agent) { print(`Agent '${first}' not found`); process.exitCode = 1; return; }
+    if (!agent) { print(`智能体 '${first}' 未找到`); process.exitCode = 1; return; }
     print(`${first}: ${agent.tool_mode || 'skills'}`);
-    print('\nUsage: agn tool-mode <agent|--all> <mcp|skills>');
+    print('\n用法：agn tool-mode <智能体|--all> <mcp|skills>');
     return;
   }
 
   if (second !== 'mcp' && second !== 'skills') {
-    print(`Invalid mode: ${second}. Must be 'mcp' or 'skills'.`);
+    print(`无效模式：${second}。必须是 'mcp' 或 'skills'。`);
     process.exitCode = 1;
     return;
   }
 
   connector.config.updateAgent(first, { tool_mode: second });
   try { connector.sendDaemonCommand('reload'); } catch {}
-  print(`Set tool mode for ${first} to '${second}'`);
+  print(`已将 ${first} 的工具模式设置为 '${second}'`);
   if (second === 'skills') {
-    print('Agent will use SKILL.md (Bash + curl) instead of MCP server for workspace tools.');
+    print('智能体将使用 SKILL.md（Bash + curl）代替 MCP 服务器来使用工作空间工具。');
   } else {
-    print('Agent will use MCP server for workspace tools (default).');
+    print('智能体将使用 MCP 服务器来使用工作空间工具（默认）。');
   }
 }
 
@@ -545,7 +545,7 @@ async function cmdSkills(connector, _flags, positional) {
   // agn skills → list skills for all agents
   if (!first) {
     const agents = connector.config.getAgents();
-    if (agents.length === 0) { print('No agents configured'); return; }
+    if (agents.length === 0) { print('未配置智能体'); return; }
     for (const a of agents) {
       const defaults = getSkillDefaults();
       const skills = a.skills || {};
@@ -555,16 +555,16 @@ async function cmdSkills(connector, _flags, positional) {
       });
       print(`  ${a.name}: ${parts.join(' ')}`);
     }
-    print('\nUsage: agn skills <agent> [enable|disable <skill>]');
-    print('Available skills: ' + toggleable.map(s => s.id).join(', '));
+    print('\n用法：agn skills <智能体> [enable|disable <技能>]');
+    print('可用技能：' + toggleable.map(s => s.id).join(', '));
     return;
   }
 
   // agn skills catalog → show full catalog
   if (first === 'catalog') {
-    print('Skill Hub — Available Skills:\n');
+    print('技能中心 — 可用技能：\n');
     for (const s of SKILL_CATALOG) {
-      const tag = s.toggleable ? (s.defaultEnabled ? '[on]' : '[off]') : '[always]';
+      const tag = s.toggleable ? (s.defaultEnabled ? '[开]' : '[关]') : '[始终]';
       print(`  ${s.id.padEnd(16)} ${tag.padEnd(10)} ${s.name}`);
       print(`  ${''.padEnd(16)} ${''.padEnd(10)} ${s.description}`);
       print('');
@@ -573,39 +573,39 @@ async function cmdSkills(connector, _flags, positional) {
   }
 
   const agent = connector.config.getAgent(first);
-  if (!agent) { print(`Agent '${first}' not found`); process.exitCode = 1; return; }
+  if (!agent) { print(`智能体 '${first}' 未找到`); process.exitCode = 1; return; }
 
   // agn skills <agent> → show agent's skills
   if (!second) {
     const defaults = getSkillDefaults();
     const skills = agent.skills || {};
-    print(`Skills for ${first}:\n`);
+    print(`${first} 的技能：\n`);
     for (const s of toggleable) {
       const enabled = skills[s.id] !== undefined ? skills[s.id] : defaults[s.id];
       const marker = enabled ? '  ✓' : '  ✗';
       print(`${marker} ${s.id.padEnd(14)} ${s.name} — ${s.description}`);
     }
-    print('\nUsage: agn skills <agent> enable|disable <skill>');
+    print('\n用法：agn skills <智能体> enable|disable <技能>');
     return;
   }
 
   // agn skills <agent> enable|disable <skill>
   if (second !== 'enable' && second !== 'disable') {
-    print(`Unknown action: ${second}. Use 'enable' or 'disable'.`);
+    print(`未知操作：${second}。请使用 'enable' 或 'disable'。`);
     process.exitCode = 1;
     return;
   }
   if (!third) {
-    print(`Usage: agn skills ${first} ${second} <skill>`);
-    print('Available skills: ' + toggleable.map(s => s.id).join(', '));
+    print(`用法：agn skills ${first} ${second} <技能>`);
+    print('可用技能：' + toggleable.map(s => s.id).join(', '));
     process.exitCode = 1;
     return;
   }
 
   const skillDef = toggleable.find(s => s.id === third);
   if (!skillDef) {
-    print(`Unknown skill: ${third}`);
-    print('Available skills: ' + toggleable.map(s => s.id).join(', '));
+    print(`未知技能：${third}`);
+    print('可用技能：' + toggleable.map(s => s.id).join(', '));
     process.exitCode = 1;
     return;
   }
@@ -614,24 +614,24 @@ async function cmdSkills(connector, _flags, positional) {
   const updated = { ...current, [third]: second === 'enable' };
   connector.config.updateAgent(first, { skills: updated });
   try { connector.sendDaemonCommand('reload'); } catch {}
-  const verb = second === 'enable' ? 'Enabled' : 'Disabled';
-  print(`${verb} '${skillDef.name}' for ${first}`);
+  const verb = second === 'enable' ? '已启用' : '已禁用';
+  print(`${verb} ${first} 的 '${skillDef.name}'`);
 }
 
 async function cmdTestLLM(connector, _flags, positional) {
   const type = positional[0];
-  if (!type) { print('Usage: agn test-llm <type>'); return; }
+  if (!type) { print('用法：agn test-llm <类型>'); return; }
 
   const env = connector.getAgentEnv(type);
   const resolved = connector.resolveAgentEnv(type, env);
   const effective = { ...env, ...resolved };
 
-  print(`Testing LLM connection for ${type}...`);
+  print(`正在测试 ${type} 的 LLM 连接...`);
   const result = await connector.testLLM(effective);
   if (result.success) {
-    print(`Success! Model: ${result.model}, Response: ${result.response}`);
+    print(`成功！模型：${result.model}，响应：${result.response}`);
   } else {
-    print(`Failed: ${result.error}`);
+    print(`失败：${result.error}`);
     process.exitCode = 1;
   }
 }
@@ -645,59 +645,59 @@ async function cmdUpdate() {
   const { checkForUpdate, runUpdate, currentVersion } = require('./update-check');
   const info = await checkForUpdate();
   if (!info) {
-    print('Could not reach the npm registry. Check your network.');
+    print('无法连接 npm registry，请检查网络。');
     process.exitCode = 1;
     return;
   }
   if (!info.isNewer) {
-    print(`Already on the latest version (${currentVersion()}).`);
+    print(`已是最新版本（${currentVersion()}）。`);
     return;
   }
-  print(`Updating ${info.current} → ${info.latest}...`);
+  print(`正在更新 ${info.current} → ${info.latest}...`);
   const ok = runUpdate();
   if (!ok) {
-    print('Update failed.');
+    print('更新失败。');
     process.exitCode = 1;
     return;
   }
-  print(`Updated to ${info.latest}.`);
+  print(`已更新到 ${info.latest}。`);
 }
 
 async function cmdHelp() {
-  print(`Usage: agn <command> [options]
+  print(`用法: agn <命令> [选项]
 
-Commands:
-  up [--foreground]           Start daemon (background by default)
-  down                        Stop daemon
-  status                      Show agent status
-  list                        List configured agents
-  create <name> [--type T]    Create a new agent
-  remove <name>               Remove an agent
-  start <name>                Start a single agent
-  stop <name>                 Stop a single agent
-  install <type>              Install an agent runtime
-  uninstall <type>            Uninstall an agent runtime
-  search [query]              Browse agent catalog
-  runtimes                    List installed runtimes
-  connect <agent> <token>     Connect agent to workspace
-  disconnect <agent>          Disconnect agent from workspace
-  env <type> [--set K=V]      View/set env vars for agent type
-  skills [agent] [action]     Manage agent skills (enable/disable)
-  tool-mode [agent] [mode]    View/set tool mode (mcp or skills)
-  autostart [--disable]       Enable/disable auto-start on login
-  test-llm <type>             Test LLM connection
-  logs [agent] [--lines N]    View daemon logs
-  workspace create [name]     Create a new workspace
-  workspace join <token>      Join workspace with token
-  workspace list              List configured workspaces
-  mcp-server                  Start MCP server (stdio) for workspace tools
-  update                      Upgrade launcher to the latest npm release
-  version                     Show version
-  help                        Show this help
+命令：
+  up [--foreground]           启动守护进程（默认后台运行）
+  down                        停止守护进程
+  status                      显示智能体状态
+  list                        列出已配置的智能体
+  create <名称> [--type T]    创建新智能体
+  remove <名称>               移除智能体
+  start <名称>                启动单个智能体
+  stop <名称>                 停止单个智能体
+  install <类型>              安装智能体运行时
+  uninstall <类型>            卸载智能体运行时
+  search [关键词]             浏览智能体目录
+  runtimes                    列出已安装的运行时
+  connect <智能体> <Token>    连接智能体到工作空间
+  disconnect <智能体>         断开智能体与工作空间的连接
+  env <类型> [--set K=V]      查看/设置智能体类型的环境变量
+  skills [智能体] [操作]      管理智能体技能（启用/禁用）
+  tool-mode [智能体] [模式]   查看/设置工具模式（mcp 或 skills）
+  autostart [--disable]       启用/禁用登录时自动启动
+  test-llm <类型>             测试 LLM 连接
+  logs [智能体] [--lines N]   查看守护进程日志
+  workspace create [名称]     创建新工作空间
+  workspace join <Token>      使用 Token 加入工作空间
+  workspace list              列出已配置的工作空间
+  mcp-server                  启动 MCP 服务器（stdio）提供工作空间工具
+  update                      升级启动器到最新 npm 版本
+  version                     显示版本
+  help                        显示此帮助
 
-Options:
-  --config <dir>              Config directory (default: ~/.openagents)
-  --install                   Install runtime during create
+选项：
+  --config <目录>             配置目录（默认：~/.openagents）
+  --install                   创建时安装运行时
 `);
 }
 
@@ -742,7 +742,7 @@ async function main() {
     } catch (e) {
       // Fall through to text-based status if blessed not available
       if (e.code !== 'MODULE_NOT_FOUND') {
-        print(`TUI error: ${e.message}`);
+        print(`TUI 错误：${e.message}`);
         process.exitCode = 1;
         return;
       }
@@ -781,7 +781,7 @@ async function main() {
       const endpoint = flags.endpoint || process.env.OPENAGENTS_ENDPOINT || 'https://workspace-endpoint.openagents.org';
       const token = process.env.OA_WORKSPACE_TOKEN || '';
       if (!workspaceId || !token) {
-        print('Error: --workspace-id required and OA_WORKSPACE_TOKEN env var must be set');
+        print('错误：必须设置 --workspace-id 和 OA_WORKSPACE_TOKEN 环境变量');
         process.exitCode = 1;
         return;
       }
@@ -794,8 +794,8 @@ async function main() {
 
   const handler = commands[cmd];
   if (!handler) {
-    print(`Unknown command: ${cmd}`);
-    print('Run: agn help');
+    print(`未知命令：${cmd}`);
+    print('运行：agn help');
     process.exitCode = 1;
     return;
   }
@@ -803,7 +803,7 @@ async function main() {
   try {
     await handler();
   } catch (e) {
-    print(`Error: ${e.message}`);
+    print(`错误：${e.message}`);
     process.exitCode = 1;
   }
 }

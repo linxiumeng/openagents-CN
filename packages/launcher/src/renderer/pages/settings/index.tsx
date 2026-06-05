@@ -47,16 +47,16 @@ type SectionId =
   | "about"
 
 const SECTIONS: Array<{ id: SectionId; label: string; icon: React.JSX.Element }> = [
-  { id: "general", label: "General", icon: <Cog className="w-4 h-4" /> },
-  { id: "appearance", label: "Appearance", icon: <Palette className="w-4 h-4" /> },
-  { id: "agents", label: "Agents", icon: <Cpu className="w-4 h-4" /> },
-  { id: "notifications", label: "Notifications", icon: <Bell className="w-4 h-4" /> },
-  { id: "network", label: "Network", icon: <Globe className="w-4 h-4" /> },
-  { id: "data", label: "Data", icon: <HardDrive className="w-4 h-4" /> },
-  { id: "language", label: "Language", icon: <Languages className="w-4 h-4" /> },
-  { id: "updates", label: "Updates", icon: <Download className="w-4 h-4" /> },
-  { id: "runtime", label: "Runtime", icon: <Cpu className="w-4 h-4" /> },
-  { id: "about", label: "About", icon: <ExternalLink className="w-4 h-4" /> },
+  { id: "general", label: "通用", icon: <Cog className="w-4 h-4" /> },
+  { id: "appearance", label: "外观", icon: <Palette className="w-4 h-4" /> },
+  { id: "agents", label: "智能体", icon: <Cpu className="w-4 h-4" /> },
+  { id: "notifications", label: "通知", icon: <Bell className="w-4 h-4" /> },
+  { id: "network", label: "网络", icon: <Globe className="w-4 h-4" /> },
+  { id: "data", label: "数据", icon: <HardDrive className="w-4 h-4" /> },
+  { id: "language", label: "语言", icon: <Languages className="w-4 h-4" /> },
+  { id: "updates", label: "更新", icon: <Download className="w-4 h-4" /> },
+  { id: "runtime", label: "运行时", icon: <Cpu className="w-4 h-4" /> },
+  { id: "about", label: "关于", icon: <ExternalLink className="w-4 h-4" /> },
 ]
 
 export default function Settings({ showToast }: SettingsProps): React.JSX.Element {
@@ -170,9 +170,9 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
-      showToast("Exported settings", "success")
+      showToast("已导出设置", "success")
     } catch (e) {
-      showToast(`Export failed: ${(e as Error).message}`, "error")
+      showToast(`导出失败：${(e as Error).message}`, "error")
     }
   }
 
@@ -187,9 +187,9 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
       const res = await window.api.importSettings(text)
       if (res.ok) {
         await loadSettings()
-        showToast("Imported settings", "success")
+        showToast("已导入设置", "success")
       } else {
-        showToast(`Import failed: ${res.error || "unknown"}`, "error")
+        showToast(`导入失败：${res.error || "未知错误"}`, "error")
       }
     }
     input.click()
@@ -207,7 +207,7 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
     try {
       await window.api.resetSettings()
       await loadSettings()
-      showToast("Settings reset", "success")
+      showToast("设置已重置", "success")
     } finally {
       setResetting(false)
       setResetOpen(false)
@@ -223,10 +223,10 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
   const runtimeRows = useMemo<Array<{ label: string; value: string; color?: string }>>(() => {
     if (!runtimeInfo) {
       return [
-        { label: "Node.js", value: "Checking..." },
-        { label: "npm", value: "Checking..." },
-        { label: "Core Library", value: "Checking..." },
-        { label: "Latest Available", value: "Checking..." },
+        { label: "Node.js", value: "检查中..." },
+        { label: "npm", value: "检查中..." },
+        { label: "核心库", value: "检查中..." },
+        { label: "最新可用版本", value: "检查中..." },
       ]
     }
     const upToDate =
@@ -235,24 +235,24 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
     return [
       {
         label: "Node.js",
-        value: runtimeInfo.nodeVersion || "Not installed",
+        value: runtimeInfo.nodeVersion || "未安装",
         color: runtimeInfo.nodeVersion ? "var(--success-text)" : "var(--danger-text)",
       },
       {
         label: "npm",
-        value: runtimeInfo.npmVersion ? `v${runtimeInfo.npmVersion}` : "Not installed",
+        value: runtimeInfo.npmVersion ? `v${runtimeInfo.npmVersion}` : "未安装",
         color: runtimeInfo.npmVersion ? "var(--success-text)" : "var(--danger-text)",
       },
       {
-        label: "Core Library",
-        value: runtimeInfo.coreVersion ? `v${runtimeInfo.coreVersion}` : "Not installed",
+        label: "核心库",
+        value: runtimeInfo.coreVersion ? `v${runtimeInfo.coreVersion}` : "未安装",
         color: runtimeInfo.coreVersion ? "var(--success-text)" : "var(--danger-text)",
       },
       {
-        label: "Latest Available",
+        label: "最新可用版本",
         value: runtimeInfo.latestVersion
-          ? `v${runtimeInfo.latestVersion}${upToDate ? " (up to date)" : " (update available)"}`
-          : "Unable to check",
+          ? `v${runtimeInfo.latestVersion}${upToDate ? "（已是最新）" : "（有新版本可用）"}`
+          : "无法检查",
         color: runtimeInfo.latestVersion
           ? upToDate
             ? "var(--success-text)"
@@ -271,21 +271,21 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
   return (
     <section className="flex flex-col h-full">
       <TopBar
-        title="Settings"
-        subtitle="— Preferences, network, data, updates"
+        title="设置"
+        subtitle="— 偏好设置、网络、数据、更新"
         actions={
           <>
-            <Button size="sm" onClick={importSettings} title="Import">
+            <Button size="sm" onClick={importSettings} title="导入">
               <ArrowUpFromLine className="w-3 h-3" />
-              Import
+              导入
             </Button>
-            <Button size="sm" onClick={exportSettings} title="Export">
+            <Button size="sm" onClick={exportSettings} title="导出">
               <ArrowDownToLine className="w-3 h-3" />
-              Export
+              导出
             </Button>
             <Button size="sm" variant="destructive" onClick={resetSettings}>
               <RotateCcw className="w-3 h-3" />
-              Reset
+              重置
             </Button>
           </>
         }
@@ -296,7 +296,7 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
           <div className="flex items-center gap-2 mb-2 px-2.5 py-1.5 rounded-sm bg-(--bg-input) text-[11px]">
             <Search className="w-3 h-3 text-(--text-tertiary)" />
             <input
-              placeholder="Search settings"
+              placeholder="搜索设置"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="bg-transparent border-0 outline-none flex-1 text-[12px]"
@@ -325,10 +325,10 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
 
         <div className="flex-1 min-w-0 overflow-y-auto pr-2">
           {section === "general" && (
-            <SettingsCard title="General">
+            <SettingsCard title="通用">
               <Row
-                label="Start on boot"
-                desc="Launch automatically when you log in"
+                label="开机启动"
+                desc="登录时自动启动"
               >
                 <Switch
                   checked={startOnBoot}
@@ -340,8 +340,8 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
               </Row>
               <Separator />
               <Row
-                label="Minimize to tray"
-                desc="Keep running in system tray when window is closed"
+                label="最小化到系统托盘"
+                desc="关闭窗口时保持在系统托盘运行"
               >
                 <Switch
                   checked={minimizeToTray}
@@ -353,8 +353,8 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
               </Row>
               <Separator />
               <Row
-                label="GPU acceleration"
-                desc="Disable if you see rendering glitches (requires restart)"
+                label="GPU 加速"
+                desc="如果出现渲染问题请禁用（需重启）"
               >
                 <Switch
                   checked={gpuAccel}
@@ -368,10 +368,16 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
           )}
 
           {section === "appearance" && (
-            <SettingsCard title="Appearance">
-              <Row label="Theme" desc="Choose how OpenAgents looks">
+            <SettingsCard title="外观">
+              <Row label="主题" desc="选择 OpenAgents 的外观">
                 <div className="flex gap-1.5">
-                  {(["light", "dark", "system"] as ThemeMode[]).map((m) => (
+                  {(
+                    [
+                      ["light", "浅色"],
+                      ["dark", "深色"],
+                      ["system", "跟随系统"],
+                    ] as [ThemeMode, string][]
+                  ).map(([m, label]) => (
                     <button
                       key={m}
                       type="button"
@@ -383,7 +389,7 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
                           : "border-(--border) bg-(--bg-card) text-(--text-secondary) hover:border-(--border-hover)",
                       )}
                     >
-                      {m[0].toUpperCase()}{m.slice(1)}
+                      {label}
                     </button>
                   ))}
                 </div>
@@ -392,10 +398,10 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
           )}
 
           {section === "agents" && (
-            <SettingsCard title="Agent defaults">
+            <SettingsCard title="智能体默认设置">
               <Row
-                label="Default agent type"
-                desc="Pre-selected when creating a new agent"
+                label="默认智能体类型"
+                desc="创建新智能体时预选"
               >
                 <Select
                   value={defaultAgentType}
@@ -405,7 +411,7 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
                   }}
                   className="w-[200px]"
                 >
-                  <option value="">(none)</option>
+                  <option value="">（无）</option>
                   {agentTypes.map((t) => (
                     <option key={t} value={t}>
                       {t}
@@ -416,21 +422,21 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
               <Separator />
               <Row
                 stacked
-                label="Default model"
-                desc="Suggested model when configuring a new agent"
+                label="默认模型"
+                desc="配置新智能体时推荐的模型"
               >
                 <Input
                   value={defaultModel}
                   onChange={(e) => setDefaultModel(e.target.value)}
                   onBlur={() => void set("defaultModel", defaultModel)}
-                  placeholder="e.g. claude-sonnet-4-5"
+                  placeholder="例如：claude-sonnet-4-5"
                   className="w-full"
                 />
               </Row>
               <Separator />
               <Row
-                label="Auto-start on launch"
-                desc="Start all configured agents when the launcher opens"
+                label="启动时自动运行"
+                desc="启动器打开时启动所有已配置的智能体"
               >
                 <Switch
                   checked={autoStart}
@@ -444,10 +450,10 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
           )}
 
           {section === "notifications" && (
-            <SettingsCard title="Notifications">
+            <SettingsCard title="通知">
               <Row
-                label="Enable notifications"
-                desc="Show OS-level toasts for important events"
+                label="启用通知"
+                desc="重要事件时显示系统级通知"
               >
                 <Switch
                   checked={!!notifPrefs?.enabled}
@@ -456,8 +462,8 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
               </Row>
               <Separator />
               <Row
-                label="Play sound"
-                desc="Audible cue when notifications fire"
+                label="播放声音"
+                desc="通知触发时发出声音提示"
               >
                 <Switch
                   checked={!!notifPrefs?.soundEnabled}
@@ -466,32 +472,31 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
               </Row>
               <Separator />
               <p className="text-[11px] text-(--text-tertiary) m-0 mt-2">
-                Fine-grained per-kind muting and quiet hours are available from
-                the bell icon at the top right.
+                可在右上角的铃铛图标中设置细粒度的分类静音和免打扰时段。
               </p>
             </SettingsCard>
           )}
 
           {section === "network" && (
-            <SettingsCard title="Network">
+            <SettingsCard title="网络">
               <Row
                 stacked
-                label="Workspace backend URL"
-                desc="Optional self-hosted Workspace server. Leave blank to use OpenAgents hosted Workspace."
+                label="工作区后端 URL"
+                desc="可选的自托管工作区服务器。留空则使用 OpenAgents 托管的工作区。"
               >
                 <Input
                   value={workspaceEndpoint}
                   onChange={(e) => setWorkspaceEndpoint(e.target.value)}
                   onBlur={() => void set("workspaceEndpoint", workspaceEndpoint)}
-                  placeholder="https://workspace-endpoint.openagents.org or http://localhost:8000"
+                  placeholder="https://workspace-endpoint.openagents.org 或 http://localhost:8000"
                   className="w-full"
                 />
               </Row>
               <Separator />
               <Row
                 stacked
-                label="HTTP proxy"
-                desc="Used by agents and the launcher for outbound HTTP"
+                label="HTTP 代理"
+                desc="智能体和启动器用于出站 HTTP 请求"
               >
                 <Input
                   value={httpProxy}
@@ -502,7 +507,7 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
                 />
               </Row>
               <Separator />
-              <Row stacked label="HTTPS proxy" desc="Outbound HTTPS proxy">
+              <Row stacked label="HTTPS 代理" desc="出站 HTTPS 代理">
                 <Input
                   value={httpsProxy}
                   onChange={(e) => setHttpsProxy(e.target.value)}
@@ -514,8 +519,8 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
               <Separator />
               <Row
                 stacked
-                label="No proxy"
-                desc="Comma-separated hosts that bypass the proxy"
+                label="不使用代理的主机"
+                desc="逗号分隔的绕过代理的主机列表"
               >
                 <Input
                   value={noProxy}
@@ -526,23 +531,22 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
                 />
               </Row>
               <p className="text-[11px] text-(--text-tertiary) m-0 mt-3">
-                Proxy values are persisted to launcher settings. Restart the
-                launcher to apply.
+                代理值将持久化保存到启动器设置中。重启启动器生效。
               </p>
             </SettingsCard>
           )}
 
           {section === "data" && (
-            <SettingsCard title="Data directories">
+            <SettingsCard title="数据目录">
               {paths ? (
                 <ul className="m-0 p-0 list-none">
                   {[
-                    ["User data", paths.userData],
-                    ["OpenAgents home", paths.openagentsHome],
-                    ["Logs", paths.logs],
-                    ["Downloads", paths.downloads],
-                    ["Cache", paths.cache],
-                    ["Portable Node.js", paths.portableNode],
+                    ["用户数据", paths.userData],
+                    ["OpenAgents 主目录", paths.openagentsHome],
+                    ["日志", paths.logs],
+                    ["下载", paths.downloads],
+                    ["缓存", paths.cache],
+                    ["便携式 Node.js", paths.portableNode],
                   ].map(([label, p]) => (
                     <li
                       key={label}
@@ -557,22 +561,22 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
                         </div>
                       </div>
                       <Button size="sm" onClick={() => void window.api.showPath(p)}>
-                        Reveal
+                        显示
                       </Button>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-[12px] text-(--text-tertiary)">Loading…</p>
+                <p className="text-[12px] text-(--text-tertiary)">加载中…</p>
               )}
             </SettingsCard>
           )}
 
           {section === "language" && (
-            <SettingsCard title="Language">
+            <SettingsCard title="语言">
               <Row
-                label="Display language"
-                desc="UI strings (some areas may not yet be translated)"
+                label="显示语言"
+                desc="界面文字（部分区域可能尚未翻译）"
               >
                 <Select
                   value={language}
@@ -591,10 +595,10 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
           )}
 
           {section === "updates" && (
-            <SettingsCard title="Updates">
+            <SettingsCard title="更新">
               <Row
-                label="Automatic updates"
-                desc="Check for new launcher and agent versions on launch"
+                label="自动更新"
+                desc="启动时检查新版本的启动器和智能体"
               >
                 <Switch
                   checked={autoUpdate}
@@ -605,7 +609,7 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
                 />
               </Row>
               <Separator />
-              <Row label="Channel" desc="Stable or beta releases">
+              <Row label="更新通道" desc="稳定版或测试版">
                 <Select
                   value={updateChannel}
                   onChange={(e) => {
@@ -615,15 +619,15 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
                   }}
                   className="w-[160px]"
                 >
-                  <option value="stable">Stable</option>
-                  <option value="beta">Beta</option>
+                  <option value="stable">稳定版</option>
+                  <option value="beta">测试版</option>
                 </Select>
               </Row>
             </SettingsCard>
           )}
 
           {section === "runtime" && (
-            <SettingsCard title="Runtime">
+            <SettingsCard title="运行时">
               {runtimeRows.map((row, idx) => (
                 <div
                   key={row.label}
@@ -640,9 +644,9 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
           )}
 
           {section === "about" && (
-            <SettingsCard title="About">
+            <SettingsCard title="关于">
               <p className="text-[13px] m-0 mb-2 flex items-center gap-1.5">
-                OpenAgents Launcher {launcherVersion}
+                OpenAgents 启动器 {launcherVersion}
               </p>
               <p className="text-[13px] m-0">
                 <button
@@ -652,7 +656,7 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
                     window.api.openExternal("https://openagents.org/docs")
                   }}
                 >
-                  Documentation
+                  文档
                 </button>
               </p>
             </SettingsCard>
@@ -662,9 +666,9 @@ export default function Settings({ showToast }: SettingsProps): React.JSX.Elemen
 
       <ConfirmDialog
         open={resetOpen}
-        title="Reset all settings?"
-        description="Restores every setting to its default. This cannot be undone."
-        confirmLabel="Reset"
+        title="重置所有设置？"
+        description="将所有设置恢复为默认值。此操作无法撤销。"
+        confirmLabel="重置"
         destructive
         busy={resetting}
         onCancel={() => {

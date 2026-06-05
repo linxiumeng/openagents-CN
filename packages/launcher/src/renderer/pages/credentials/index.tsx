@@ -143,8 +143,8 @@ export default function Credentials({ showToast }: Props): React.JSX.Element {
   return (
     <section className="flex flex-col h-full">
       <TopBar
-        title="Credentials"
-        subtitle="— Encrypted at rest. Reusable across multiple agents"
+        title="凭据"
+        subtitle="— 静态加密存储，可在多个智能体间复用"
         actions={
           <Button variant="primary" onClick={openAdd}>
             <Plus className="w-3.5 h-3.5" />
@@ -160,7 +160,7 @@ export default function Credentials({ showToast }: Props): React.JSX.Element {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onClear={() => setSearch("")}
-          placeholder="Search credentials..."
+          placeholder="搜索凭据..."
           className="flex-1 min-w-[200px] max-w-[300px]"
         />
         <div className="inline-flex items-center gap-1 rounded-(--radius-sm) bg-(--bg-input) p-1 flex-wrap">

@@ -296,8 +296,8 @@ export default function Workspaces({ showToast }: Props): React.JSX.Element {
   return (
     <section className="flex flex-col h-full">
       <TopBar
-        title="Workspaces"
-        subtitle="— Each workspace bundles its agents, activity, and connections"
+        title="工作空间"
+        subtitle="— 每个工作空间包含其智能体、活动和连接"
         actions={
           <>
             <Button onClick={() => setQuickOpen(true)}>
@@ -343,7 +343,7 @@ export default function Workspaces({ showToast }: Props): React.JSX.Element {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onClear={() => setSearch("")}
-          placeholder="Search workspaces or agents..."
+          placeholder="搜索工作空间或智能体..."
           className="flex-1 max-w-[320px]"
         />
         <Button size="sm" variant="ghost" onClick={reload}>

@@ -90,8 +90,8 @@ export default function Connections({ showToast }: Props): React.JSX.Element {
   return (
     <section className="flex flex-col h-full">
       <TopBar
-        title="Connections"
-        subtitle="— Authorizations to external platforms (encrypted on disk)"
+        title="连接"
+        subtitle="— 外部平台授权（加密存储于磁盘）"
         actions={
           <div className="flex items-center gap-2 text-[11px] text-(--text-tertiary)">
             <span>
@@ -110,7 +110,7 @@ export default function Connections({ showToast }: Props): React.JSX.Element {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onClear={() => setSearch("")}
-          placeholder="Search platforms..."
+          placeholder="搜索平台..."
           className="flex-1 max-w-[280px]"
         />
         <div className="inline-flex items-center gap-1 rounded-(--radius-sm) bg-(--bg-input) p-1">

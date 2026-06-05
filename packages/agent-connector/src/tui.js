@@ -38,14 +38,14 @@ const COLORS = {
 };
 
 const STATE_DISPLAY = {
-  online:        { sym: '\u25CF', color: COLORS.stateRunning, label: 'connected' },
-  running:       { sym: '\u25CF', color: COLORS.stateRunning, label: 'connected' },
-  idle:          { sym: '\u25CB', color: COLORS.stateStarting, label: 'ready' },
-  starting:      { sym: '\u25D0', color: COLORS.stateStarting, label: 'starting' },
-  reconnecting:  { sym: '\u25D0', color: COLORS.stateStarting, label: 'reconnecting' },
-  stopped:       { sym: '\u25CB', color: COLORS.stateStopped, label: 'stopped' },
-  'not configured': { sym: '\u25CB', color: COLORS.stateStopped, label: 'not configured' },
-  error:         { sym: '\u2717', color: COLORS.stateError, label: 'error' },
+  online:        { sym: '\u25CF', color: COLORS.stateRunning, label: '已连接' },
+  running:       { sym: '\u25CF', color: COLORS.stateRunning, label: '已连接' },
+  idle:          { sym: '\u25CB', color: COLORS.stateStarting, label: '就绪' },
+  starting:      { sym: '\u25D0', color: COLORS.stateStarting, label: '启动中' },
+  reconnecting:  { sym: '\u25D0', color: COLORS.stateStarting, label: '重连中' },
+  stopped:       { sym: '\u25CB', color: COLORS.stateStopped, label: '已停止' },
+  'not configured': { sym: '\u25CB', color: COLORS.stateStopped, label: '未配置' },
+  error:         { sym: '\u2717', color: COLORS.stateError, label: '错误' },
 };
 
 function stateMarkup(state, hasWorkspace) {
@@ -53,7 +53,7 @@ function stateMarkup(state, hasWorkspace) {
   let label = d.label;
   // For running/connected agents, clarify workspace status
   if ((state === 'running' || state === 'online') && !hasWorkspace) {
-    label = 'running';
+    label = '运行中';
   }
   return `{${d.color}-fg}${d.sym} ${label}{/${d.color}-fg}`;
 }
@@ -65,17 +65,17 @@ function getConnector() {
   return new AgentConnector({ configDir });
 }
 
-function describeHealth(health) {
-  if (!health) return '';
-  if (!health.ready) return health.message || 'Not configured';
-  const parts = ['Ready'];
-  if (health.auth_mode === 'api_key') parts.push('API key');
-  else if (health.auth_mode === 'cli_login') parts.push('CLI login');
-  if (health.execution_mode && health.execution_mode !== 'unavailable') {
-    parts.push(health.execution_mode);
+  function describeHealth(health) {
+    if (!health) return '';
+    if (!health.ready) return health.message || '未配置';
+    const parts = ['就绪'];
+    if (health.auth_mode === 'api_key') parts.push('API 密钥');
+    else if (health.auth_mode === 'cli_login') parts.push('CLI 登录');
+    if (health.execution_mode && health.execution_mode !== 'unavailable') {
+      parts.push(health.execution_mode);
+    }
+    return parts.join(' | ');
   }
-  return parts.join(' | ');
-}
 
 function loadCatalog(connector) {
   const entries = connector.registry.getCatalogSync();
@@ -146,7 +146,7 @@ function createTUI() {
   const agentPanel = blessed.box({
     top: 2, left: 0, width: '100%', height: '60%-1',
     border: { type: 'line' },
-    label: ' {bold}Agents{/bold} ',
+    label: ' {bold}智能体{/bold} ',
     tags: true,
     style: { bg: 'black', border: { fg: COLORS.panelBorder }, label: { fg: COLORS.accent } },
   });
@@ -177,7 +177,7 @@ function createTUI() {
   const logPanel = blessed.box({
     top: '60%+1', left: 0, width: '100%', height: '40%-2',
     border: { type: 'line' },
-    label: ' {bold}Activity Log{/bold} ',
+    label: ' {bold}活动日志{/bold} ',
     tags: true,
     style: { bg: 'black', border: { fg: COLORS.logBorder }, label: { fg: COLORS.primary } },
   });
@@ -216,29 +216,29 @@ function createTUI() {
     const agent = selectedAgent();
     const items = [];
 
-    items.push({ key: 'i', label: 'Install' });
-    items.push({ key: 'n', label: 'New' });
+    items.push({ key: 'i', label: '安装', actionName: 'Install' });
+    items.push({ key: 'n', label: '新建', actionName: 'New' });
 
     if (agent && agent.configured) {
       const isRunning = ['running', 'online', 'starting', 'reconnecting'].includes(agent.state);
       const isStopped = ['stopped', 'error'].includes(agent.state);
 
-      if (isStopped) items.push({ key: 's', label: 'Start' });
-      if (isRunning) items.push({ key: 'x', label: 'Stop' });
+      if (isStopped) items.push({ key: 's', label: '启动', actionName: 'Start' });
+      if (isRunning) items.push({ key: 'x', label: '停止', actionName: 'Stop' });
 
       const envFields = connector.registry.getEnvFields(agent.type);
-      if (envFields && envFields.length > 0) items.push({ key: 'e', label: 'Configure' });
+      if (envFields && envFields.length > 0) items.push({ key: 'e', label: '配置', actionName: 'Configure' });
 
-      if (connectAvailable(agent)) items.push({ key: 'c', label: 'Connect' });
-      if (agent.workspace) items.push({ key: 'd', label: 'Disconnect' });
-      if (agent.workspace) items.push({ key: 'w', label: 'Workspace' });
+      if (connectAvailable(agent)) items.push({ key: 'c', label: '连接', actionName: 'Connect' });
+      if (agent.workspace) items.push({ key: 'd', label: '断开', actionName: 'Disconnect' });
+      if (agent.workspace) items.push({ key: 'w', label: '工作空间', actionName: 'Workspace' });
 
-      items.push({ key: 'Del', label: 'Remove' });
+      items.push({ key: 'Del', label: '移除', actionName: 'Remove' });
     }
 
-    items.push({ key: 'u', label: 'Daemon' });
-    items.push({ key: 'r', label: 'Refresh' });
-    items.push({ key: 'q', label: 'Quit' });
+    items.push({ key: 'u', label: '守护进程', actionName: 'Daemon' });
+    items.push({ key: 'r', label: '刷新', actionName: 'Refresh' });
+    items.push({ key: 'q', label: '退出', actionName: 'Quit' });
 
     // Remove old buttons
     for (const btn of footerButtons) { footerBar.remove(btn); btn.destroy(); }
@@ -257,7 +257,7 @@ function createTUI() {
         content: `{cyan-fg}${item.key}{/cyan-fg} ${item.label}`,
         style: { bg: COLORS.footerBg, fg: COLORS.footerFg, hover: { bg: 'cyan', fg: 'black' } },
       });
-      const action = footerActions[item.label];
+      const action = item.actionName ? footerActions[item.actionName] : null;
       if (action) {
         btn.on('click', () => action());
       }
@@ -274,7 +274,7 @@ function createTUI() {
     try { agentRows = loadAgentRows(connector); } catch { agentRows = []; }
 
     if (agentRows.length === 0) {
-      agentList.setItems(['  {gray-fg}No agents configured. Press {bold}i{/bold} to install, {bold}n{/bold} to create.{/gray-fg}']);
+      agentList.setItems(['  {gray-fg}未配置智能体。按 {bold}i{/bold} 安装，按 {bold}n{/bold} 创建。{/gray-fg}']);
     } else {
       // Two rows per agent: main row + detail row (path + config status)
       const items = [];
@@ -306,7 +306,7 @@ function createTUI() {
   function updateHeader() {
     const pid = connector.getDaemonPid();
     const dot = pid ? `{green-fg}\u25CF{/green-fg}` : `{gray-fg}\u25CB{/gray-fg}`;
-    const state = pid ? 'Daemon running' : 'Daemon idle';
+    const state = pid ? '守护进程运行中' : '守护进程空闲';
     const count = agentRows.length;
 
     // Show installed runtimes
@@ -316,11 +316,11 @@ function createTUI() {
       installed = catalog.filter(e => e.installed).map(e => e.name);
     } catch {}
     const installedStr = installed.length
-      ? `  {gray-fg}|{/gray-fg}  {green-fg}${installed.join(', ')}{/green-fg} installed`
+      ? `  {gray-fg}|{/gray-fg}  {green-fg}${installed.join(', ')}{/green-fg} 已安装`
       : '';
 
     header.setContent(
-      `  ${dot} ${state}  {gray-fg}|{/gray-fg}  ${count} agent${count !== 1 ? 's' : ''} configured${installedStr}`
+      `  ${dot} ${state}  {gray-fg}|{/gray-fg}  ${count} 个智能体已配置${installedStr}`
     );
   }
 
@@ -366,20 +366,20 @@ function createTUI() {
     const isStopped = ['stopped', 'error'].includes(agent.state);
 
     const envFields = connector.registry.getEnvFields(agent.type);
-    if (envFields && envFields.length > 0) actions.push({ label: 'Configure', key: 'configure' });
+    if (envFields && envFields.length > 0) actions.push({ label: '配置', key: 'configure' });
 
     const catalog = connector.registry.getCatalogSync();
     const entry = catalog.find(e => e.name === agent.type);
     if (entry && entry.check_ready && entry.check_ready.login_command) {
-      actions.push({ label: 'Login', key: 'login' });
+      actions.push({ label: '登录', key: 'login' });
     }
 
-    if (isStopped) actions.push({ label: 'Start', key: 'start' });
-    if (isRunning) actions.push({ label: 'Stop', key: 'stop' });
-    if (agent.workspace) actions.push({ label: 'Open Workspace', key: 'open_workspace' });
-    if (connectAvailable(agent)) actions.push({ label: 'Connect to Workspace', key: 'connect' });
-    if (agent.workspace) actions.push({ label: 'Disconnect from Workspace', key: 'disconnect' });
-    actions.push({ label: 'Remove', key: 'remove' });
+    if (isStopped) actions.push({ label: '启动', key: 'start' });
+    if (isRunning) actions.push({ label: '停止', key: 'stop' });
+    if (agent.workspace) actions.push({ label: '打开工作空间', key: 'open_workspace' });
+    if (connectAvailable(agent)) actions.push({ label: '连接到工作空间', key: 'connect' });
+    if (agent.workspace) actions.push({ label: '断开工作空间', key: 'disconnect' });
+    actions.push({ label: '移除', key: 'remove' });
 
     if (actions.length === 0) return;
 
@@ -451,14 +451,14 @@ function createTUI() {
       parent: box, top: 0, left: 0, width: '100%', height: 1,
       tags: true,
       style: { bg: COLORS.headerBg, fg: COLORS.headerFg, bold: true },
-      content: '  {bold}Install Agent Runtimes{/bold}  {gray-fg}\u2014  Enter to install, Esc to go back{/gray-fg}',
+      content: '  {bold}安装智能体运行时{/bold}  {gray-fg}\u2014  Enter 安装，Esc 返回{/gray-fg}',
     });
 
     blessed.box({
       parent: box, top: 1, left: 0, width: '100%', height: 1,
       tags: true,
       style: { bg: COLORS.colHeaderBg, fg: COLORS.colHeaderFg },
-      content: `  ${'AGENT'.padEnd(25)} ${'STATUS'.padEnd(18)} DESCRIPTION`,
+      content: `  ${'智能体'.padEnd(25)} ${'状态'.padEnd(18)} 描述`,
     });
 
     const list = blessed.list({
@@ -493,14 +493,14 @@ function createTUI() {
       parent: box, bottom: 0, left: 0, width: '100%', height: 1,
       tags: true,
       style: { bg: COLORS.footerBg, fg: COLORS.footerFg },
-      content: ' {cyan-fg}Enter{/cyan-fg} Install/Update  {cyan-fg}Esc{/cyan-fg} Back',
+      content: ' {cyan-fg}Enter{/cyan-fg} 安装/更新  {cyan-fg}Esc{/cyan-fg} 返回',
     });
 
     function renderList() {
       list.setItems(catalog.map(e => {
         const st = e.installed
-          ? `{green-fg}\u25CF installed{/green-fg}`
-          : `{yellow-fg}\u25CB available{/yellow-fg}`;
+          ? `{green-fg}\u25CF 已安装{/green-fg}`
+          : `{yellow-fg}\u25CB 可用{/yellow-fg}`;
         const desc = e.description ? e.description.substring(0, 40) : '';
         return `  ${e.label.padEnd(25)} ${st.padEnd(30)} {gray-fg}${desc}{/gray-fg}`;
       }));
@@ -555,11 +555,11 @@ function createTUI() {
       }
     }).then(() => {
       installLog.log('');
-      installLog.log(`{green-fg}\u2713 ${entry.name} installed successfully!{/green-fg}`);
+      installLog.log(`{green-fg}\u2713 ${entry.name} 安装成功！{/green-fg}`);
       installLog.log('');
-      installLog.log(`{cyan-fg}Press c to create a ${entry.name} agent, or Esc to go back.{/cyan-fg}`);
-      logPanel.setLabel(` {bold}{green-fg}Install Complete{/green-fg}{/bold} `);
-      log(`{green-fg}\u2713{/green-fg} ${entry.name} installed`);
+      installLog.log(`{cyan-fg}按 c 创建 ${entry.name} 智能体，按 Esc 返回。{/cyan-fg}`);
+      logPanel.setLabel(` {bold}{green-fg}安装完成{/green-fg}{/bold} `);
+      log(`{green-fg}\u2713{/green-fg} ${entry.name} 已安装`);
       const idx = catalog.findIndex(c => c.name === entry.name);
       if (idx >= 0) catalog[idx].installed = true;
       renderList();
@@ -598,9 +598,9 @@ function createTUI() {
       screen.key(['c', 'escape'], onCreateKey);
     }).catch((e) => {
       installLog.log('');
-      installLog.log(`{red-fg}\u2717 Failed: ${e.message}{/red-fg}`);
-      logPanel.setLabel(` {bold}{red-fg}Install Failed{/red-fg}{/bold} `);
-      log(`{red-fg}\u2717 Install failed:{/red-fg} ${e.message}`);
+      installLog.log(`{red-fg}\u2717 失败：${e.message}{/red-fg}`);
+      logPanel.setLabel(` {bold}{red-fg}安装失败{/red-fg}{/bold} `);
+      log(`{red-fg}\u2717 安装失败：{/red-fg} ${e.message}`);
       onDone();
       list.focus();
       screen.render();
@@ -626,7 +626,7 @@ function createTUI() {
       width: 50, height: dialogHeight,
       border: { type: 'line' },
       tags: true,
-      label: ' {bold}Select Agent Type{/bold} ',
+      label: ' {bold}选择智能体类型{/bold} ',
       style: { border: { fg: COLORS.accent }, bg: COLORS.surface },
     });
 
@@ -646,7 +646,7 @@ function createTUI() {
       parent: dialog,
       bottom: 0, left: 0, width: '100%-2', height: 1,
       tags: true,
-      content: ' {gray-fg}Enter to select, Esc to cancel{/gray-fg}',
+      content: ' {gray-fg}Enter 选择，Esc 取消{/gray-fg}',
     });
 
     screen.append(dialog);
@@ -683,18 +683,18 @@ function createTUI() {
       width: 60, height: 15,
       border: { type: 'line' },
       tags: true,
-      label: ` {bold}Start ${agentType} Agent{/bold} `,
+      label: ` {bold}启动 ${agentType} 智能体{/bold} `,
       style: { border: { fg: COLORS.accent }, bg: COLORS.surface },
     });
 
-    blessed.text({ parent: dialog, top: 1, left: 2, tags: true, content: `{bold}Agent name:{/bold} {gray-fg}(default: ${defaultName}){/gray-fg}` });
+    blessed.text({ parent: dialog, top: 1, left: 2, tags: true, content: `{bold}智能体名称：{/bold} {gray-fg}（默认：${defaultName}）{/gray-fg}` });
     const nameInput = blessed.textbox({
       parent: dialog, top: 2, left: 2, width: 50, height: 3,
       border: { type: 'line' }, inputOnFocus: true,
       style: { fg: 'white', bg: COLORS.surface, focus: { border: { fg: COLORS.accent } }, border: { fg: 'grey' } },
     });
 
-    blessed.text({ parent: dialog, top: 5, left: 2, tags: true, content: `{bold}Working directory:{/bold} {gray-fg}(default: ${defaultPath}){/gray-fg}` });
+    blessed.text({ parent: dialog, top: 5, left: 2, tags: true, content: `{bold}工作目录：{/bold} {gray-fg}（默认：${defaultPath}）{/gray-fg}` });
     const pathInput = blessed.textbox({
       parent: dialog, top: 6, left: 2, width: 50, height: 3,
       border: { type: 'line' }, inputOnFocus: true,
@@ -705,7 +705,7 @@ function createTUI() {
     blessed.text({
       parent: dialog, top: 10, left: 2,
       tags: true,
-      content: '{gray-fg}Enter to confirm, Escape to cancel{/gray-fg}',
+      content: '{gray-fg}Enter 确认，Escape 取消{/gray-fg}',
     });
 
     const msg = blessed.text({ parent: dialog, top: 11, left: 2, tags: true, content: '' });
@@ -766,7 +766,7 @@ function createTUI() {
       parent: box, top: 0, left: 0, width: '100%', height: 1,
       tags: true,
       style: { bg: COLORS.headerBg, fg: COLORS.headerFg, bold: true },
-      content: `  {bold}Configure ${agent.type}{/bold}  {gray-fg}\u2014  Saved to ~/.openagents/env/{/gray-fg}`,
+      content: `  {bold}配置 ${agent.type}{/bold}  {gray-fg}\u2014  保存到 ~/.openagents/env/{/gray-fg}`,
     });
 
     const inputs = [];
@@ -827,7 +827,7 @@ function createTUI() {
       parent: box, bottom: 0, left: 0, width: '100%', height: 1,
       tags: true,
       style: { bg: COLORS.footerBg, fg: COLORS.footerFg },
-      content: ' {cyan-fg}Tab{/cyan-fg} Next  {cyan-fg}Ctrl+U{/cyan-fg} Clear  {cyan-fg}Ctrl+S{/cyan-fg} Save  {cyan-fg}Ctrl+T{/cyan-fg} Test  {cyan-fg}Esc{/cyan-fg} Back',
+      content: ' {cyan-fg}Tab{/cyan-fg} 下一个  {cyan-fg}Ctrl+U{/cyan-fg} 清空  {cyan-fg}Ctrl+S{/cyan-fg} 保存  {cyan-fg}Ctrl+T{/cyan-fg} 测试  {cyan-fg}Esc{/cyan-fg} 返回',
     });
 
     screen.append(box);
@@ -949,14 +949,14 @@ function createTUI() {
       parent: box, top: 0, left: 0, width: '100%', height: 1,
       tags: true,
       style: { bg: COLORS.headerBg, fg: COLORS.headerFg, bold: true },
-      content: `  {bold}Connect '${agentName}' to Workspace{/bold}  {gray-fg}\u2014  Select a workspace and press Enter{/gray-fg}`,
+      content: `  {bold}将 '${agentName}' 连接到工作空间{/bold}  {gray-fg}\u2014  选择工作空间并按 Enter{/gray-fg}`,
     });
 
     blessed.box({
       parent: box, top: 1, left: 0, width: '100%', height: 1,
       tags: true,
       style: { bg: COLORS.colHeaderBg, fg: COLORS.colHeaderFg },
-      content: `  ${'WORKSPACE'.padEnd(30)} URL`,
+      content: `  ${'工作空间'.padEnd(30)} URL`,
     });
 
     const rowActions = [];
@@ -971,9 +971,9 @@ function createTUI() {
       rowActions.push(`existing:${slug}`);
     }
 
-    items.push(`  {bold}{green-fg}\u271A Create new workspace{/green-fg}{/bold}`);
+    items.push(`  {bold}{green-fg}\u271A 创建新工作空间{/green-fg}{/bold}`);
     rowActions.push('__create__');
-    items.push(`  {bold}{yellow-fg}\u{1F511} Join with token{/yellow-fg}{/bold}`);
+    items.push(`  {bold}{yellow-fg}\u{1F511} 使用 Token 加入{/yellow-fg}{/bold}`);
     rowActions.push('__token__');
 
     const list = blessed.list({
@@ -991,7 +991,7 @@ function createTUI() {
       parent: box, bottom: 0, left: 0, width: '100%', height: 1,
       tags: true,
       style: { bg: COLORS.footerBg, fg: COLORS.footerFg },
-      content: ' {cyan-fg}Enter{/cyan-fg} Select  {cyan-fg}Esc{/cyan-fg} Back',
+      content: ' {cyan-fg}Enter{/cyan-fg} 选择  {cyan-fg}Esc{/cyan-fg} 返回',
     });
 
     screen.append(box);
@@ -1047,7 +1047,7 @@ function createTUI() {
       border: { type: 'line' },
       tags: true,
       style: { border: { fg: COLORS.accent }, bg: COLORS.surface },
-      content: `\n  ${message}\n  {gray-fg}y = yes, n = no{/gray-fg}`,
+      content: `\n  ${message}\n  {gray-fg}y = 是, n = 否{/gray-fg}`,
     });
     screen.append(dialog);
     screen.render();
@@ -1082,7 +1082,7 @@ function createTUI() {
     blessed.text({
       parent: dialog, top: 4, left: 2,
       tags: true,
-      content: '{gray-fg}Enter to confirm, Escape to cancel{/gray-fg}',
+      content: '{gray-fg}Enter 确认，Escape 取消{/gray-fg}',
     });
 
     screen.append(dialog);
@@ -1122,22 +1122,22 @@ function createTUI() {
   }
 
   function doStart(agentName) {
-    log(`Starting {cyan-fg}${agentName}{/cyan-fg}...`);
+    log(`正在启动 {cyan-fg}${agentName}{/cyan-fg}...`);
     const pid = connector.getDaemonPid();
     if (!pid) {
       try {
         connector.startDaemon();
-        log(`{green-fg}\u2713{/green-fg} Starting daemon (will launch {cyan-fg}${agentName}{/cyan-fg})`);
+        log(`{green-fg}\u2713{/green-fg} 启动守护进程（将启动 {cyan-fg}${agentName}{/cyan-fg})`);
       } catch (e) {
-        log(`{red-fg}\u2717 Failed to start daemon:{/red-fg} ${e.message}`);
+        log(`{red-fg}\u2717 启动守护进程失败：{/red-fg} ${e.message}`);
         return;
       }
     } else {
       try {
         connector.sendDaemonCommand(`restart:${agentName}`);
-        log(`{green-fg}\u2713{/green-fg} Restarting {cyan-fg}${agentName}{/cyan-fg} via daemon`);
+        log(`{green-fg}\u2713{/green-fg} 通过守护进程重启 {cyan-fg}${agentName}{/cyan-fg}`);
       } catch (e) {
-        log(`{red-fg}\u2717 Failed:{/red-fg} ${e.message}`);
+        log(`{red-fg}\u2717 失败：{/red-fg} ${e.message}`);
         return;
       }
     }
@@ -1145,10 +1145,10 @@ function createTUI() {
   }
 
   function doStop(agentName) {
-    log(`Stopping {cyan-fg}${agentName}{/cyan-fg}...`);
+    log(`正在停止 {cyan-fg}${agentName}{/cyan-fg}...`);
     try {
       connector.sendDaemonCommand(`stop:${agentName}`);
-      log(`{green-fg}\u2713{/green-fg} Stopped {cyan-fg}${agentName}{/cyan-fg}`);
+      log(`{green-fg}\u2713{/green-fg} 已停止 {cyan-fg}${agentName}{/cyan-fg}`);
     } catch (e) {
       log(`{red-fg}\u2717{/red-fg} ${e.message}`);
     }
@@ -1156,7 +1156,7 @@ function createTUI() {
   }
 
   function doRemove(agentName) {
-    showConfirmDialog(`Remove ${agentName}?`, (yes) => {
+    showConfirmDialog(`移除 ${agentName}？`, (yes) => {
       if (!yes) return;
       // Disconnect first if connected
       const agent = agentRows.find(a => a.name === agentName);
@@ -1164,7 +1164,7 @@ function createTUI() {
         try {
           connector.disconnectWorkspace(agentName);
           signalDaemonReload();
-          log(`Disconnected {cyan-fg}${agentName}{/cyan-fg}`);
+          log(`已断开 {cyan-fg}${agentName}{/cyan-fg}`);
         } catch {}
       }
       // Stop if daemon running
@@ -1176,7 +1176,7 @@ function createTUI() {
       try {
         connector.removeAgent(agentName);
         signalDaemonReload();
-        log(`{green-fg}\u2713{/green-fg} Removed {cyan-fg}${agentName}{/cyan-fg}`);
+        log(`{green-fg}\u2713{/green-fg} 已移除 {cyan-fg}${agentName}{/cyan-fg}`);
       } catch (e) {
         log(`{red-fg}\u2717{/red-fg} ${e.message}`);
       }
@@ -1188,7 +1188,7 @@ function createTUI() {
     try {
       connector.disconnectWorkspace(agentName);
       signalDaemonReload();
-      log(`{green-fg}\u2713{/green-fg} Disconnected {cyan-fg}${agentName}{/cyan-fg}`);
+      log(`{green-fg}\u2713{/green-fg} 已断开 {cyan-fg}${agentName}{/cyan-fg}`);
     } catch (e) {
       log(`{red-fg}\u2717{/red-fg} ${e.message}`);
     }
@@ -1200,7 +1200,7 @@ function createTUI() {
     const networks = config.networks || [];
     const net = networks.find(n => n.slug === agent.network || n.id === agent.network);
     if (!net) {
-      log('{yellow-fg}No workspace config found{/yellow-fg}');
+      log('{yellow-fg}未找到工作空间配置{/yellow-fg}');
       return;
     }
     const slug = net.slug || net.id;
@@ -1232,9 +1232,9 @@ function createTUI() {
       width: '100%', height: 4 + urlLines + 2,
       border: { type: 'line' },
       tags: true,
-      label: ' {bold}Workspace URL{/bold} ',
+      label: ' {bold}工作空间 URL{/bold} ',
       style: { border: { fg: COLORS.accent }, bg: COLORS.surface },
-      content: `\n {bold}${url}{/bold}\n\n {gray-fg}${opened ? 'Opened in browser.' : 'Copy the URL above.'} Press Esc to close.{/gray-fg}`,
+      content: `\n {bold}${url}{/bold}\n\n {gray-fg}${opened ? '已在浏览器中打开。' : '请复制上方 URL。'} 按 Esc 关闭。{/gray-fg}`,
     });
 
     screen.append(dialog);
@@ -1251,32 +1251,32 @@ function createTUI() {
       close();
     });
 
-    if (opened) log(`{green-fg}\u2713{/green-fg} Opened workspace in browser`);
+    if (opened) log(`{green-fg}\u2713{/green-fg} 已在浏览器中打开工作空间`);
   }
 
   function doLogin(agent) {
     const catalog = connector.registry.getCatalogSync();
     const entry = catalog.find(e => e.name === agent.type);
     if (!entry || !entry.check_ready || !entry.check_ready.login_command) {
-      log('{yellow-fg}No login command for this agent type{/yellow-fg}');
+      log('{yellow-fg}此智能体类型没有登录命令{/yellow-fg}');
       return;
     }
     const cmd = entry.check_ready.login_command;
-    log(`Running {bold}${cmd}{/bold}...`);
+    log(`运行 {bold}${cmd}{/bold}...`);
 
     // Suspend TUI and run login command interactively
     screen.exec(cmd, {}, (err, ok) => {
       if (err) {
-        log(`{red-fg}\u2717 Login error:{/red-fg} ${err.message}`);
+        log(`{red-fg}\u2717 登录错误：{/red-fg} ${err.message}`);
       } else {
-        log(`{green-fg}\u2713{/green-fg} Login completed`);
+        log(`{green-fg}\u2713{/green-fg} 登录完成`);
       }
       refreshAgentTable();
     });
   }
 
   function doCreateWorkspace(agentName, wsName) {
-    log(`Creating workspace {bold}${wsName}{/bold}...`);
+    log(`正在创建工作空间 {bold}${wsName}{/bold}...`);
     connector.createWorkspace({ agentName, name: wsName }).then(result => {
       const slug = result.slug || result.workspaceId;
       // Save to config
@@ -1289,15 +1289,15 @@ function createTUI() {
       });
       connector.connectWorkspace(agentName, slug);
       signalDaemonReload();
-      log(`{green-fg}\u2713{/green-fg} Created & connected \u2192 ${result.url || slug}`);
+      log(`{green-fg}\u2713{/green-fg} 已创建并连接 \u2192 ${result.url || slug}`);
       refreshAgentTable();
     }).catch(e => {
-      log(`{red-fg}\u2717 Create failed:{/red-fg} ${e.message}`);
+      log(`{red-fg}\u2717 创建失败：{/red-fg} ${e.message}`);
     });
   }
 
   function doJoinToken(agentName, token) {
-    log('Joining workspace with token...');
+    log('正在使用 Token 加入工作空间...');
     connector.resolveToken(token).then(info => {
       const slug = info.slug || info.workspace_id;
       connector.config.addNetwork({
@@ -1309,10 +1309,10 @@ function createTUI() {
       });
       connector.connectWorkspace(agentName, slug);
       signalDaemonReload();
-      log(`{green-fg}\u2713{/green-fg} Joined & connected {cyan-fg}${agentName}{/cyan-fg} \u2192 ${slug}`);
+      log(`{green-fg}\u2713{/green-fg} 已加入并连接 {cyan-fg}${agentName}{/cyan-fg} \u2192 ${slug}`);
       refreshAgentTable();
     }).catch(e => {
-      log(`{red-fg}\u2717 Join failed:{/red-fg} ${e.message}`);
+      log(`{red-fg}\u2717 加入失败：{/red-fg} ${e.message}`);
     });
   }
 
@@ -1383,11 +1383,11 @@ function createTUI() {
       if (currentView !== 'main') return;
       const pid = connector.getDaemonPid();
       if (pid) {
-        showConfirmDialog('Stop daemon? This will disconnect ALL agents.', (yes) => {
-          if (!yes) { log('{gray-fg}Cancelled{/gray-fg}'); return; }
+        showConfirmDialog('停止守护进程？这将断开所有智能体的连接。', (yes) => {
+          if (!yes) { log('{gray-fg}已取消{/gray-fg}'); return; }
           try {
             connector.stopDaemon();
-            log('{green-fg}\u2713{/green-fg} Daemon stopped');
+            log('{green-fg}\u2713{/green-fg} 守护进程已停止');
           } catch (e) {
             log(`{red-fg}\u2717{/red-fg} ${e.message}`);
           }
@@ -1396,7 +1396,7 @@ function createTUI() {
       } else {
         try {
           connector.startDaemon();
-          log('{green-fg}\u2713{/green-fg} Daemon starting...');
+          log('{green-fg}\u2713{/green-fg} 守护进程启动中...');
         } catch (e) {
           log(`{red-fg}\u2717{/red-fg} ${e.message}`);
         }
@@ -1406,7 +1406,7 @@ function createTUI() {
     Refresh() {
       if (currentView === 'main') {
         refreshAgentTable();
-        log('{green-fg}\u2713{/green-fg} Refreshed');
+        log('{green-fg}\u2713{/green-fg} 已刷新');
       }
     },
     Quit() { if (currentView === 'main') process.exit(0); },
@@ -1430,7 +1430,7 @@ function createTUI() {
   // ── Init ──
   agentList.focus();
   refreshAgentTable();
-  log('Welcome to {bold}OpenAgents{/bold}. Press {cyan-fg}i{/cyan-fg} to install agents, {cyan-fg}n{/cyan-fg} to create one.');
+  log('欢迎使用 {bold}OpenAgents{/bold}。按 {cyan-fg}i{/cyan-fg} 安装智能体，按 {cyan-fg}n{/cyan-fg} 创建智能体。');
 
   // Show installed runtimes that don't have any agent instances yet
   try {
@@ -1439,10 +1439,10 @@ function createTUI() {
     const configuredTypes = new Set(agentRows.map(r => r.type));
     const unused = installed.filter(t => !configuredTypes.has(t));
     if (unused.length > 0) {
-      log(`{green-fg}\u2713{/green-fg} Installed: {bold}${unused.join(', ')}{/bold} — press {cyan-fg}n{/cyan-fg} to create an agent`);
+      log(`{green-fg}\u2713{/green-fg} 已安装：{bold}${unused.join(', ')}{/bold} — 按 {cyan-fg}n{/cyan-fg} 创建智能体`);
     }
     if (installed.length === 0) {
-      log('{yellow-fg}!{/yellow-fg} No agent runtimes installed. Press {cyan-fg}i{/cyan-fg} to install one.');
+      log('{yellow-fg}!{/yellow-fg} 未安装智能体运行时。按 {cyan-fg}i{/cyan-fg} 安装一个。');
     }
   } catch {}
 

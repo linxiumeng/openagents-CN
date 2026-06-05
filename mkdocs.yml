@@ -1,6 +1,6 @@
 # Project information
 site_name: OpenAgents
-site_description: An Open Framework for Connecting AI Agents at Scale
+site_description: 大规模连接 AI 智能体的开放框架
 site_author: OpenAgents
 site_url: https://openagents.org
 
@@ -96,45 +96,45 @@ extra:
 
 # Navigation structure
 nav:
-  - Home: index.md
-  - Getting Started:
-    - Installation: getting-started/installation.md
-    - Quick Start: getting-started/quick-start.md
-    - Basic Concepts: getting-started/basic-concepts.md
-  - User Guide:
-    - Creating Agents: user-guide/creating-agents.md
-    - Setting Up Networks: user-guide/setting-up-networks.md
-    - Using Protocols: user-guide/using-protocols.md
-    - Configuration Files: user-guide/configuration-files.md
-    - Command Line Interface: user-guide/command-line-interface.md
-  - Protocols:
-    - Overview: protocols/overview.md
-    - Discovery Protocol: protocols/discovery.md
-    - Communication Protocol: protocols/communication.md
-    - Heartbeat Protocol: protocols/heartbeat.md
-    - Identity Protocol: protocols/identity.md
-    - Coordination Protocol: protocols/coordination.md
-    - Resource Management Protocol: protocols/resource-management.md
-  - Advanced Topics:
-    - Custom Protocols: advanced/custom-protocols.md
-    - Agent Patterns: advanced/agent-patterns.md
-    - Network Topologies: advanced/network-topologies.md
-    - Security Considerations: advanced/security.md
-    - Performance Optimization: advanced/performance.md
-  - API Reference:
-    - Core: api/core.md
-    - Protocols: api/protocols.md
-    - Models: api/models.md
-    - CLI: api/cli.md
-  - Development:
-    - Contributing: development/contributing.md
-    - Development Setup: development/setup.md
-    - Testing: development/testing.md
-    - Documentation: development/documentation.md
-  - Examples:
-    - Basic Network: examples/basic-network.md
-    - Service Discovery: examples/service-discovery.md
-    - Pub-Sub Messaging: examples/pub-sub-messaging.md
-    - Request-Response: examples/request-response.md
-  - FAQ: faq.md
-  - Changelog: changelog.md 
+  - 首页: index.md
+  - 快速开始:
+    - 安装: getting-started/installation.md
+    - 快速入门: getting-started/quick-start.md
+    - 基本概念: getting-started/basic-concepts.md
+  - 用户指南:
+    - 创建智能体: user-guide/creating-agents.md
+    - 搭建网络: user-guide/setting-up-networks.md
+    - 使用协议: user-guide/using-protocols.md
+    - 配置文件: user-guide/configuration-files.md
+    - 命令行接口: user-guide/command-line-interface.md
+  - 协议:
+    - 概述: protocols/overview.md
+    - 发现协议: protocols/discovery.md
+    - 通信协议: protocols/communication.md
+    - 心跳协议: protocols/heartbeat.md
+    - 身份协议: protocols/identity.md
+    - 协调协议: protocols/coordination.md
+    - 资源管理协议: protocols/resource-management.md
+  - 高级主题:
+    - 自定义协议: advanced/custom-protocols.md
+    - 智能体模式: advanced/agent-patterns.md
+    - 网络拓扑: advanced/network-topologies.md
+    - 安全考量: advanced/security.md
+    - 性能优化: advanced/performance.md
+  - API 参考:
+    - 核心: api/core.md
+    - 协议: api/protocols.md
+    - 模型: api/models.md
+    - 命令行: api/cli.md
+  - 开发:
+    - 贡献指南: development/contributing.md
+    - 开发环境搭建: development/setup.md
+    - 测试: development/testing.md
+    - 文档: development/documentation.md
+  - 示例:
+    - 基本网络: examples/basic-network.md
+    - 服务发现: examples/service-discovery.md
+    - 发布-订阅消息: examples/pub-sub-messaging.md
+    - 请求-响应: examples/request-response.md
+  - 常见问题: faq.md
+  - 更新日志: changelog.md 

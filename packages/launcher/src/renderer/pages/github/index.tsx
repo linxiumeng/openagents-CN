@@ -179,7 +179,7 @@ export default function GitHubPage({ showToast }: Props): React.JSX.Element {
     <section className="flex flex-col h-full">
       <TopBar
         title="GitHub"
-        subtitle="— Bind agents to repos, surface recent issues / PRs"
+        subtitle="— 将智能体绑定到仓库，查看最近的 Issues / PRs"
         actions={
           <>
             <Button
