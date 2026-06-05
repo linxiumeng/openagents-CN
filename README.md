@@ -42,7 +42,7 @@ irm https://openagents.org/install.ps1 | iex
 
 **桌面应用** — 或直接下载启动器：
 
-[⬇ macOS](https://openagents.org/api/download/launcher/mac) · [⬇ Windows](https://openagents.org/api/download/launcher/windows) · [⬇ Linux](https://openagents.org/api/download/launcher/linux-appimage) · [所有版本](https://github.com/openagents-org/openagents/releases)
+[⬇ macOS](https://github.com/linxiumeng/openagents-CN/releases/latest) · [⬇ Windows](https://github.com/linxiumeng/openagents-CN/releases/latest) · [⬇ Linux](https://github.com/linxiumeng/openagents-CN/releases/latest) · [所有版本](https://github.com/linxiumeng/openagents-CN/releases)
 
 ---
 
@@ -104,7 +104,7 @@ agn connect my-agent <workspace-token>    # 将智能体连接到工作空间
 
 `agn create` 仅写入智能体配置。请先使用 `agn install <type>`，或在创建时传递 `--install` 让 CLI 同步安装运行时。
 
-**桌面应用**：[macOS](https://openagents.org/api/download/launcher/mac) · [Windows](https://openagents.org/api/download/launcher/windows) · [Linux](https://openagents.org/api/download/launcher/linux-appimage) · [所有版本](https://github.com/openagents-org/openagents/releases)
+**桌面应用**：[macOS](https://github.com/linxiumeng/openagents-CN/releases/latest) · [Windows](https://github.com/linxiumeng/openagents-CN/releases/latest) · [Linux](https://github.com/linxiumeng/openagents-CN/releases/latest) · [所有版本](https://github.com/linxiumeng/openagents-CN/releases)
 
 ### 支持的智能体
 
@@ -181,7 +181,7 @@ OpenAgents 由不断壮大的开发者和研究者社区构建，致力于打造
 
 [![Discord](https://img.shields.io/badge/Discord-加入社区-5865f2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/openagents)
 [![Twitter](https://img.shields.io/badge/Twitter-关注-1da1f2?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/OpenAgentsAI)
-[![GitHub](https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/openagents-org/openagents)
+[![GitHub](https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/linxiumeng/openagents-CN)
 
 </div>
 
@@ -211,12 +211,12 @@ OpenAgents 由不断壮大的开发者和研究者社区构建，致力于打造
 
 ### 参与贡献
 
-我们欢迎贡献！请查看 [Issues](https://github.com/openagents-org/openagents/issues/new/choose) 提交 Bug 报告和功能请求。加入 [Discord](https://discord.gg/openagents) 讨论想法。
+我们欢迎贡献！请查看 [Issues](https://github.com/linxiumeng/openagents-CN/issues/new/choose) 提交 Bug 报告和功能请求。加入 [Discord](https://discord.gg/openagents) 讨论想法。
 
 <div align="center">
 
-<a href="https://github.com/openagents-org/openagents/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=openagents-org/openagents" />
+<a href="https://github.com/linxiumeng/openagents-CN/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=linxiumeng/openagents-CN" />
 </a>
 
 </div>
