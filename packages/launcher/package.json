@@ -29,7 +29,7 @@
     "dist": "npm run build && electron-builder --publish always"
   },
   "dependencies": {
-    "@openagents-org/agent-launcher": "file:../agent-connector/openagents-org-agent-launcher-0.2.133.tgz",
+    "@openagents-cn/agent-launcher": "file:../agent-connector/openagents-cn-agent-launcher-0.2.133.tgz",
     "clsx": "^2.1.1",
     "lucide-react": "^0.460.0",
     "posthog-js": "^1.376.0",
@@ -58,18 +58,18 @@
     "vitest": "^4.1.7"
   },
   "build": {
-    "appId": "com.openagents.launcher",
-    "productName": "OpenAgents Launcher",
+    "appId": "com.openagents.launcher.cn",
+    "productName": "OpenAgents Launcher CN",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "out/**/*",
       "package.json",
-      "node_modules/@openagents-org/**/*",
+      "node_modules/@openagents-cn/**/*",
       "node_modules/ws/**/*",
       "node_modules/blessed/**/*"
     ],
     "asarUnpack": [
-      "node_modules/@openagents-org/**/*",
+      "node_modules/@openagents-cn/**/*",
       "node_modules/ws/**/*",
       "node_modules/blessed/**/*"
     ],
@@ -155,8 +155,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "openagents-org",
-      "repo": "openagents"
+      "owner": "linxiumeng",
+      "repo": "openagents-CN"
     }
   }
 }
