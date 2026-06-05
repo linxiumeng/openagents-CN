@@ -43,6 +43,14 @@ jobs:
       - name: Build macOS app (unsigned)
         run: npm run ${{ matrix.build_script }}
 
+      - name: Ad-hoc sign to avoid Gatekeeper damage warning
+        run: |
+          APP_PATH=$(find dist/mac* -maxdepth 1 -name "*.app" -type d | head -1)
+          if [ -n "$APP_PATH" ]; then
+            codesign --force --deep --sign - "$APP_PATH"
+            echo "Ad-hoc signed: $APP_PATH"
+          fi
+
       - name: Verify macOS artifacts
         run: |
           ls -la dist
