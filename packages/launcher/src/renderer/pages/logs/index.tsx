@@ -36,6 +36,33 @@ function toDateTimeLocalValue(date: Date): string {
   ].join("")
 }
 
+/**
+ * Parse a datetime-local string (e.g. "2025-06-05T17:00") as a local-time Date.
+ *
+ * Avoids the timezone pitfall of `new Date(string)`, which in Chrome/Electron
+ * treats strings without a timezone as UTC, causing an offset equal to the
+ * user's local timezone.
+ */
+function fromDateTimeLocalValue(value: string): Date {
+  // value format: "YYYY-MM-DDTHH:mm"
+  const [datePart, timePart] = value.split("T")
+  const [year, month, day] = datePart.split("-").map(Number)
+  const [hour, minute] = timePart.split(":").map(Number)
+  return new Date(year, month - 1, day, hour, minute)
+}
+
+/**
+ * Format a ParsedLog's timestamp for display, converting from the log's
+ * original timezone (usually UTC) to the user's local time.
+ */
+function formatDisplayTime(p: ParsedLog): string {
+  // Prefer the iso field (standardized UTC), fall back to raw timestamp
+  const d = p.iso ? new Date(p.iso) : p.timestamp ? new Date(p.timestamp) : null
+  if (!d || isNaN(d.getTime())) return "—"
+  const pad = (v: number): string => String(v).padStart(2, "0")
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+}
+
 const LEVEL_ORDER: LogLevel[] = ["error", "warn", "info", "debug", "trace", "unknown"]
 
 export default function Logs({ showToast }: LogsProps): React.JSX.Element {
@@ -195,8 +222,8 @@ export default function Logs({ showToast }: LogsProps): React.JSX.Element {
 
   const doClearLogs = async (): Promise<void> => {
     if (clearInFlight) return
-    const start = clearStart ? new Date(clearStart) : null
-    const end = clearEnd ? new Date(clearEnd) : null
+    const start = clearStart ? fromDateTimeLocalValue(clearStart) : null
+    const end = clearEnd ? fromDateTimeLocalValue(clearEnd) : null
     if (!start || isNaN(start.getTime()) || !end || isNaN(end.getTime())) {
       setClearError("Please select a valid start and end time.")
       return
@@ -365,7 +392,7 @@ export default function Logs({ showToast }: LogsProps): React.JSX.Element {
                   )}
                 >
                   <span className="shrink-0 text-[10px] text-(--text-tertiary) tabular-nums w-[80px]">
-                    {p.timestamp ? p.timestamp.split(/[ T]/).pop()?.slice(0, 8) : "—"}
+                    {formatDisplayTime(p)}
                   </span>
                   <span className="shrink-0 mt-[1px]">
                     <LogLevelBadge level={p.level} />
@@ -472,12 +499,15 @@ function TimelineView({
 }: {
   entries: Array<{ p: ParsedLog; i: number }>
 }): React.JSX.Element {
-  // Group by date / hour bucket
+  // Group by date / hour bucket (in local time)
   const groups = useMemo(() => {
     const map = new Map<string, Array<{ p: ParsedLog; i: number }>>()
+    const pad = (v: number): string => String(v).padStart(2, "0")
     for (const e of entries) {
-      const stamp = e.p.iso || e.p.timestamp || ""
-      const key = stamp ? stamp.slice(0, 16) : "(no timestamp)"
+      const d = e.p.iso ? new Date(e.p.iso) : e.p.timestamp ? new Date(e.p.timestamp) : null
+      const key = d && !isNaN(d.getTime())
+        ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+        : "(no timestamp)"
       const arr = map.get(key) || []
       arr.push(e)
       map.set(key, arr)

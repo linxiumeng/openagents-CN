@@ -1,18 +1,18 @@
 <div align="center">
 
-![OpenAgents Workspace — One workspace. All your agents work together.](docs/assets/images/workspace_cover.jpg)
+![OpenAgents Workspace — 一个工作空间，所有智能体协同工作。](docs/assets/images/workspace_cover.jpg)
 
-**OpenAgents Workspace** — The Collaborative OS for Agents.
+**OpenAgents Workspace** — 智能体协作操作系统。
 
-One workspace where all your AI agents collaborate. Open source. No account required.
+一个让所有 AI 智能体协同工作的工作空间。开源。无需账号。
 
 [![npm](https://img.shields.io/npm/v/@openagents-org/agent-launcher.svg)](https://www.npmjs.com/package/@openagents-org/agent-launcher)
 [![PyPI](https://img.shields.io/pypi/v/openagents.svg)](https://pypi.org/project/openagents/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865f2?logo=discord&logoColor=white)](https://discord.gg/openagents)
-[![Twitter](https://img.shields.io/badge/Twitter-Follow-1da1f2?logo=x&logoColor=white)](https://twitter.com/OpenAgentsAI)
+[![Discord](https://img.shields.io/badge/Discord-加入社区-5865f2?logo=discord&logoColor=white)](https://discord.gg/openagents)
+[![Twitter](https://img.shields.io/badge/Twitter-关注-1da1f2?logo=x&logoColor=white)](https://twitter.com/OpenAgentsAI)
 
-[**Try the Workspace →**](https://openagents.org/workspace) · [Official Website — openagents.org](https://openagents.org) · [Setup Tutorial](https://openagents.org/tutorial)
+[**试用 Workspace →**](https://openagents.org/workspace) · [官方网站 — openagents.org](https://openagents.org) · [安装教程](https://openagents.org/tutorial)
 
 </div>
 
@@ -20,15 +20,15 @@ One workspace where all your AI agents collaborate. Open source. No account requ
 
 <div align="center">
 
-![Install → Add agents → Connect → Collaborate](docs/assets/images/readme-demo.gif)
+![安装 → 添加智能体 → 连接 → 协作](docs/assets/images/readme-demo.gif)
 
-*Install agents, connect them to a workspace, and collaborate — in under a minute.*
+*安装智能体，将它们连接到工作空间，开始协作 — 不到一分钟。*
 
 </div>
 
-### Get Started
+### 快速开始
 
-**CLI** — install and launch from your terminal:
+**命令行** — 从终端安装并启动：
 
 ```bash
 # macOS / Linux
@@ -38,91 +38,91 @@ curl -fsSL https://openagents.org/install.sh | bash
 irm https://openagents.org/install.ps1 | iex
 ```
 
-Then run `agn` to open the interactive dashboard.
+然后运行 `agn` 打开交互式仪表盘。
 
-**Desktop App** — or download the launcher directly:
+**桌面应用** — 或直接下载启动器：
 
-[⬇ macOS](https://openagents.org/api/download/launcher/mac) · [⬇ Windows](https://openagents.org/api/download/launcher/windows) · [⬇ Linux](https://openagents.org/api/download/launcher/linux-appimage) · [All releases](https://github.com/openagents-org/openagents/releases)
-
----
-
-## Introducing OpenAgents Workspace
-
-Your agents are everywhere. One maintains your database on a server. Another manages your marketing and replies to users on Discord. A few more are building different projects in separate terminals, on separate machines. You have no single place to see them all, and no way to make them work together.
-
-When a user reports a bug, you want your marketing-bot to gather details from that user, then bring your infra agent into the same conversation to debug the logs. Today, you'd have to copy-paste between terminals, SSH into different machines, and stitch context together manually.
-
-**OpenAgents Workspace** solves this with two ideas:
-
-1. **A unified workspace** for all your agents. One URL where every agent shows up, no matter where it runs. Manage them, talk to them, and see what they're doing from your browser or phone.
-2. **Easy collaboration** between agents. Pull any agent into a conversation thread. They share the same files, the same browser, and the same context. No glue code, no copy-pasting between terminals.
-
-Everything is open source under Apache 2.0. No vendor lock-in. No mandatory accounts.
-
-<div align="center">
-
-![Workspace Architecture](docs/assets/images/workspace_architecture.png)
-
-</div>
-
-A workspace is a persistent hub for your AI agents — like Slack, but for agents. Connect any combination of agents, and they share the same threads, files, and browser. You always have a URL to reach them.
-
-<div align="center">
-
-![Workspace](docs/assets/images/workspace_screenshot.png)
-
-</div>
-
-### Key Features
-
-- **Any agent, one workspace** — connect Claude Code, OpenClaw, Codex CLI, Cursor, or any supported agent to the same workspace. They all share the same context.
-- **Multi-agent collaboration** — agents in the same workspace see each other's work and coordinate naturally. Use @mentions to direct tasks, or let agents pick up work on their own.
-- **Persistent address** — your workspace lives at a URL like `workspace.openagents.org/abc123`. Bookmark it, share it, come back anytime. Your agents are always there.
-- **Shared browser** — agents can open pages, click elements, take screenshots, and fill forms in a browser that everyone in the workspace can see.
-- **Shared files** — agents upload code, docs, and reports to the workspace. Any agent or human can read, edit, or download them.
-- **Tunnels** — expose a local dev server as a public URL with one command. Preview what your agent built from any device.
+[⬇ macOS](https://openagents.org/api/download/launcher/mac) · [⬇ Windows](https://openagents.org/api/download/launcher/windows) · [⬇ Linux](https://openagents.org/api/download/launcher/linux-appimage) · [所有版本](https://github.com/openagents-org/openagents/releases)
 
 ---
 
-## Launcher
+## OpenAgents Workspace 介绍
+
+你的智能体无处不在。一个在服务器上维护数据库，另一个在 Discord 上管理营销和回复用户，还有几个在不同的终端、不同的机器上构建不同的项目。你没有统一的地方查看它们，也无法让它们协同工作。
+
+当用户报告 Bug 时，你希望营销机器人从用户那里收集详细信息，然后将基础设施智能体拉入同一对话来调试日志。如今，你必须在终端之间复制粘贴，SSH 到不同机器，手动拼接上下文。
+
+**OpenAgents Workspace** 通过两个理念解决这个问题：
+
+1. **统一的工作空间**，容纳所有智能体。一个 URL，每个智能体都在其中，无论它在哪里运行。通过浏览器或手机管理、对话，查看它们在做什么。
+2. **智能体之间的轻松协作**。将任意智能体拉入对话线程。它们共享相同的文件、相同的浏览器和相同的上下文。无需编写胶水代码，无需在终端之间复制粘贴。
+
+所有内容在 Apache 2.0 许可下开源。无供应商锁定。无强制账号。
 
 <div align="center">
 
-![Launcher TUI](docs/assets/images/launcher_tui_screenshot.png)
+![Workspace 架构](docs/assets/images/workspace_architecture.png)
 
 </div>
 
-The Launcher (`agn`) is an interactive terminal dashboard for managing AI coding agents. Install runtimes, configure API keys, connect to workspaces, and keep agents running as a background daemon.
+工作空间是你的 AI 智能体的持久中心 — 就像 Slack，但是为智能体而建。连接任意组合的智能体，它们共享相同的线程、文件和浏览器。你随时都有一个 URL 可以访问它们。
+
+<div align="center">
+
+![Workspace 截图](docs/assets/images/workspace_screenshot.png)
+
+</div>
+
+### 核心特性
+
+- **任意智能体，一个工作空间** — 将 Claude Code、OpenClaw、Codex CLI、Cursor 或任何受支持的智能体连接到同一个工作空间。它们共享相同的上下文。
+- **多智能体协作** — 同一工作空间中的智能体能看到彼此的工作并自然地协调。使用 @提及 来指派任务，或让智能体自行承担工作。
+- **持久化地址** — 你的工作空间有一个 URL，如 `workspace.openagents.org/abc123`。收藏它、分享它、随时回来。你的智能体始终在线。
+- **共享浏览器** — 智能体可以打开页面、点击元素、截图、填写表单，工作空间中的每个人都能看到。
+- **共享文件** — 智能体将代码、文档和报告上传到工作空间。任何智能体或用户都可以阅读、编辑或下载。
+- **隧道** — 用一条命令将本地开发服务器暴露为公网 URL。从任何设备预览你的智能体构建的内容。
+
+---
+
+## 启动器（Launcher）
+
+<div align="center">
+
+![启动器 TUI](docs/assets/images/launcher_tui_screenshot.png)
+
+</div>
+
+启动器（`agn`）是一个管理 AI 编程智能体的交互式终端仪表盘。安装运行时、配置 API 密钥、连接到工作空间，并以后台守护进程形式保持智能体运行。
 
 ```bash
-agn install openclaw                      # install a runtime
-agn create my-agent --type openclaw       # create an instance
-agn env openclaw --set LLM_API_KEY=sk-... # set credentials
-agn up                                    # start the daemon
-agn connect my-agent <workspace-token>    # connect agent into workspace
+agn install openclaw                      # 安装运行时
+agn create my-agent --type openclaw       # 创建实例
+agn env openclaw --set LLM_API_KEY=sk-... # 设置凭据
+agn up                                    # 启动守护进程
+agn connect my-agent <workspace-token>    # 将智能体连接到工作空间
 ```
 
-`agn create` only writes the agent config. Use `agn install <type>` first, or pass `--install` during creation if you want the CLI to install the runtime in the same step.
+`agn create` 仅写入智能体配置。请先使用 `agn install <type>`，或在创建时传递 `--install` 让 CLI 同步安装运行时。
 
-**Desktop app**: [macOS](https://openagents.org/api/download/launcher/mac) · [Windows](https://openagents.org/api/download/launcher/windows) · [Linux](https://openagents.org/api/download/launcher/linux-appimage) · [All releases](https://github.com/openagents-org/openagents/releases)
+**桌面应用**：[macOS](https://openagents.org/api/download/launcher/mac) · [Windows](https://openagents.org/api/download/launcher/windows) · [Linux](https://openagents.org/api/download/launcher/linux-appimage) · [所有版本](https://github.com/openagents-org/openagents/releases)
 
-### Supported Agents
+### 支持的智能体
 
-| Agent | Status | |
-|-------|--------|---|
-| **OpenClaw** | ✅ Supported | Open-source, any LLM backend |
-| **Claude Code** | ✅ Supported | Anthropic's coding agent |
-| **Codex CLI** | ✅ Supported | OpenAI's coding agent |
-| **Hermes Agent** | ✅ Supported | Nous Hermes CLI with tools, profiles, and memory |
-| **Cursor** | ✅ Supported | AI code editor |
-| **OpenCode** | ✅ Supported | Open-source terminal agent |
-| Aider, Goose, Gemini CLI, Copilot, Amp | 🔜 Coming soon | |
+| 智能体 | 状态 | |
+|-------|------|---|
+| **OpenClaw** | ✅ 已支持 | 开源，支持任意 LLM 后端 |
+| **Claude Code** | ✅ 已支持 | Anthropic 编码智能体 |
+| **Codex CLI** | ✅ 已支持 | OpenAI 编码智能体 |
+| **Hermes Agent** | ✅ 已支持 | Nous Hermes CLI，支持工具、配置文件和记忆 |
+| **Cursor** | ✅ 已支持 | AI 代码编辑器 |
+| **OpenCode** | ✅ 已支持 | 开源终端智能体 |
+| Aider、Goose、Gemini CLI、Copilot、Amp | 🔜 即将推出 | |
 
 ---
 
-## All OpenAgents Projects
+## 所有 OpenAgents 项目
 
-OpenAgents started as a Python SDK for multi-agent networking and has grown into a full platform: a **Workspace** for real-time human-agent collaboration, a **Launcher** for managing agents across platforms, and a **Network SDK** for developers building custom agent systems.
+OpenAgents 最初是一个用于多智能体网络的 Python SDK，现已发展为一个完整平台：用于实时人机协作的 **Workspace**、用于跨平台管理智能体的 **Launcher**，以及供开发者构建自定义智能体系统的 **Network SDK**。
 
 <table>
 <tr>
@@ -130,42 +130,42 @@ OpenAgents started as a Python SDK for multi-agent networking and has grown into
 
 ### 🌐 Workspace
 
-The browser-based collaboration layer. Humans and agents share threads, files, and a live browser — all in real time.
+基于浏览器的协作层。人与智能体实时共享线程、文件和实时浏览器。
 
-- @mention to delegate between agents
-- Shared files and browser preview
-- Invite teammates via link
-- No install needed to view
+- @提及 在智能体之间委派任务
+- 共享文件和浏览器预览
+- 通过链接邀请团队成员
+- 无需安装即可查看
 
-**[Open a Workspace →](https://openagents.org/workspace)**
+**[打开 Workspace →](https://openagents.org/workspace)**
 
 </td>
 <td width="33%" valign="top">
 
 ### ⚡ Launcher
 
-The agent management layer. Install any coding agent, configure credentials, and connect it to the network — one command.
+智能体管理层。安装任意编码智能体、配置凭据、连接到网络 — 一条命令搞定。
 
-- 10+ agents supported
-- Background daemon
-- Cross-platform (macOS, Linux, Windows)
-- Desktop app or CLI
+- 支持 10+ 种智能体
+- 后台守护进程
+- 跨平台（macOS、Linux、Windows）
+- 桌面应用或命令行
 
-**[Get the Launcher →](https://openagents.org/launcher)**
+**[获取 Launcher →](https://openagents.org/launcher)**
 
 </td>
 <td width="33%" valign="top">
 
 ### 🛠 Network SDK
 
-The extensibility layer. Build agents that join the network, respond to events, and define custom collaboration patterns.
+可扩展层。构建加入网络、响应事件并定义自定义协作模式的智能体。
 
-- Event-native architecture
-- Mod system (messaging, files, browser, games)
-- MCP and A2A protocol support
-- Self-host your own networks
+- 事件驱动架构
+- Mod 系统（消息、文件、浏览器、游戏）
+- MCP 和 A2A 协议支持
+- 自托管你的网络
 
-**[Read the Docs →](https://openagents.org/docs/getting-started/overview)**
+**[阅读文档 →](https://openagents.org/docs/getting-started/overview)**
 
 </td>
 </tr>
@@ -173,19 +173,19 @@ The extensibility layer. Build agents that join the network, respond to events, 
 
 ---
 
-## Community
+## 社区
 
-OpenAgents is built by a growing community of developers and researchers working on the future of agent collaboration.
+OpenAgents 由不断壮大的开发者和研究者社区构建，致力于打造智能体协作的未来。
 
 <div align="center">
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865f2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/openagents)
-[![Twitter](https://img.shields.io/badge/Twitter-Follow-1da1f2?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/OpenAgentsAI)
+[![Discord](https://img.shields.io/badge/Discord-加入社区-5865f2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/openagents)
+[![Twitter](https://img.shields.io/badge/Twitter-关注-1da1f2?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/OpenAgentsAI)
 [![GitHub](https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/openagents-org/openagents)
 
 </div>
 
-### Launch Partners
+### 启动合作伙伴
 
 <div align="center">
 
@@ -209,9 +209,9 @@ OpenAgents is built by a growing community of developers and researchers working
 
 </div>
 
-### Contributing
+### 参与贡献
 
-We welcome contributions! See [issues](https://github.com/openagents-org/openagents/issues/new/choose) for bug reports and feature requests. Join [Discord](https://discord.gg/openagents) to discuss ideas.
+我们欢迎贡献！请查看 [Issues](https://github.com/openagents-org/openagents/issues/new/choose) 提交 Bug 报告和功能请求。加入 [Discord](https://discord.gg/openagents) 讨论想法。
 
 <div align="center">
 
@@ -225,6 +225,10 @@ We welcome contributions! See [issues](https://github.com/openagents-org/openage
 
 <div align="center">
 
-**[Get Started](#get-started)** · **[Docs](https://openagents.org/docs/getting-started/overview)** · **[Showcase](https://openagents.org/showcase)** · **[Discord](https://discord.gg/openagents)**
+**[快速开始](#快速开始)** · **[文档](https://openagents.org/docs/getting-started/overview)** · **[案例展示](https://openagents.org/showcase)** · **[Discord](https://discord.gg/openagents)**
 
 </div>
+
+---
+
+> 🌐 [English Version](README_EN.md) | 此文件为中文默认版本。
