@@ -96,7 +96,7 @@ function loadCtor(): GitHubClientStatic {
     return _ctor
   } catch {
     // Fall back to the installed copy under the bundled global modules.
-    const mod = require("@openagents-org/agent-launcher") as {
+    const mod = require("@openagents-cn/agent-launcher") as {
       GitHubClient: GitHubClientStatic
     }
     _ctor = mod.GitHubClient

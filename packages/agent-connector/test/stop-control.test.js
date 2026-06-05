@@ -4,6 +4,9 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const EventEmitter = require('node:events');
 const { spawn } = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 
 const BaseAdapter = require('../src/adapters/base');
 const ClaudeAdapter = require('../src/adapters/claude');
@@ -99,6 +102,32 @@ describe('agent stop control', () => {
     assert.equal(adapter._channelProcesses.channelA, undefined);
     assert.ok(adapter._channelProcesses.channelB);
     assert.deepEqual(responses, [{ channel: 'channelA', content: 'Execution stopped by user.' }]);
+  });
+
+  it('Claude skills mode falls back to user-level skills when working dir is root', () => {
+    const realHomedir = os.homedir;
+    const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), 'oa-claude-home-'));
+    os.homedir = () => fakeHome;
+    try {
+      const adapter = new ClaudeAdapter({
+        workspaceId: 'ws',
+        channelName: 'thread',
+        token: 'token',
+        agentName: 'claude',
+        workingDir: path.parse(fakeHome).root,
+      });
+
+      const built = adapter._buildSkillsCmd(['claude', '-p', 'hi'], 'thread');
+
+      assert.equal(
+        built.skillFile,
+        path.join(fakeHome, '.claude', 'skills', 'openagents-workspace.md'),
+      );
+      assert.equal(fs.existsSync(built.skillFile), true);
+    } finally {
+      os.homedir = realHomedir;
+      fs.rmSync(fakeHome, { recursive: true, force: true });
+    }
   });
 
   it('Claude stop terminates the spawned process tree', async () => {

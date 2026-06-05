@@ -313,7 +313,7 @@ function loadCore(): Record<string, unknown> | null {
     } catch {}
   }
   try {
-    return require("@openagents-org/agent-launcher")
+    return require("@openagents-cn/agent-launcher")
   } catch {}
   return null
 }
@@ -512,7 +512,7 @@ export class AgentManager extends EventEmitter {
         return JSON.parse(fs.readFileSync(pkg, "utf-8")).version
     } catch {}
     try {
-      return require("@openagents-org/agent-launcher/package.json").version
+      return require("@openagents-cn/agent-launcher/package.json").version
     } catch {}
     return null
   }
@@ -860,7 +860,7 @@ export class AgentManager extends EventEmitter {
 
     try {
       if (agentType === "openclaw") {
-        const OpenClawAdapter = require("@openagents-org/agent-launcher/src/adapters/openclaw")
+        const OpenClawAdapter = require("@openagents-cn/agent-launcher/src/adapters/openclaw")
         OpenClawAdapter.configureNativeAuth(env)
       }
     } catch {}

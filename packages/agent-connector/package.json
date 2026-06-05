@@ -1,7 +1,7 @@
 {
-  "name": "@openagents-org/agent-launcher",
+  "name": "@openagents-cn/agent-launcher",
   "version": "0.2.133",
-  "description": "OpenAgents Launcher — install, configure, and run AI coding agents from your terminal",
+  "description": "OpenAgents Launcher CN — 安装、配置和运行 AI 编程智能体",
   "main": "src/index.js",
   "bin": {
     "agn": "bin/agent-connector.js",
@@ -21,7 +21,7 @@
     "cli",
     "launcher"
   ],
-  "author": "OpenAgents",
+  "author": "OpenAgents CN",
   "license": "MIT",
   "repository": {
     "type": "git",

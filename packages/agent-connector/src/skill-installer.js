@@ -40,7 +40,11 @@ const { execFileSync } = require('child_process');
  * @returns {string} absolute path to the skills directory
  */
 function skillsDirForAgentType(agentType, workingDir) {
-  const base = workingDir || process.cwd();
+  const rawBase = workingDir || process.cwd();
+  const resolvedBase = path.resolve(rawBase);
+  const base = resolvedBase === path.parse(resolvedBase).root && (agentType || '').toLowerCase() === 'claude'
+    ? os.homedir()
+    : resolvedBase;
   switch ((agentType || '').toLowerCase()) {
     case 'claude':
       return path.join(base, '.claude', 'skills');

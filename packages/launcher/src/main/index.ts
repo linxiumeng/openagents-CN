@@ -108,7 +108,7 @@ if (process.argv.includes("--disable-gpu") || isHeadless) {
 
 const PORTABLE_NODE_DIR = path.join(os.homedir(), ".openagents", "nodejs")
 const GLOBAL_MODULES = path.join(PORTABLE_NODE_DIR, "node_modules")
-const CORE_PKG = "@openagents-org/agent-launcher"
+const CORE_PKG = "@openagents-cn/agent-launcher"
 
 if (
   fs.existsSync(GLOBAL_MODULES) &&

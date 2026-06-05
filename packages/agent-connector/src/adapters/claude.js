@@ -416,6 +416,15 @@ class ClaudeAdapter extends BaseAdapter {
   /**
    * Skills mode: write a SKILL.md file and allow Bash + curl for workspace ops.
    */
+  _workspaceSkillDir() {
+    const workDir = this.workingDir || process.cwd();
+    const resolvedWorkDir = path.resolve(workDir);
+    if (resolvedWorkDir === path.parse(resolvedWorkDir).root) {
+      return path.join(os.homedir(), '.claude', 'skills');
+    }
+    return path.join(resolvedWorkDir, '.claude', 'skills');
+  }
+
   _buildSkillsCmd(cmd, channelName) {
     if (this._mode === 'plan') {
       cmd.push('--permission-mode', 'plan');
@@ -425,9 +434,9 @@ class ClaudeAdapter extends BaseAdapter {
       cmd.push('--allowedTools', 'Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep');
     }
 
-    // Write SKILL.md to .claude/skills/ in the working directory
-    const workDir = this.workingDir || process.cwd();
-    const skillDir = path.join(workDir, '.claude', 'skills');
+    // Write SKILL.md to .claude/skills/. Root cwd is common for launcher-
+    // managed agents, but Claude cannot create /.claude as a normal user.
+    const skillDir = this._workspaceSkillDir();
     fs.mkdirSync(skillDir, { recursive: true });
     const skillFile = path.join(skillDir, 'openagents-workspace.md');
 

@@ -40,16 +40,21 @@ jobs:
           npm cache clean --force
           npm install
 
-      - name: Build macOS app (unsigned)
+      - name: Build macOS app
         run: npm run ${{ matrix.build_script }}
 
-      - name: Ad-hoc sign to avoid Gatekeeper damage warning
+      - name: Ad-hoc sign .app and rebuild DMG
         run: |
           APP_PATH=$(find dist/mac* -maxdepth 1 -name "*.app" -type d | head -1)
-          if [ -n "$APP_PATH" ]; then
-            codesign --force --deep --sign - "$APP_PATH"
-            echo "Ad-hoc signed: $APP_PATH"
-          fi
+          echo "Signing $APP_PATH"
+          codesign --force --deep --sign - "$APP_PATH"
+          codesign -dvvv "$APP_PATH" 2>&1 | grep -E "Signature|adhoc|Authority"
+
+          # Rebuild DMG with signed .app (skip signing in builder)
+          DMG_FILE=$(ls dist/*-mac-${{ matrix.arch }}.dmg | head -1)
+          echo "Rebuilding DMG from signed app: $DMG_FILE"
+          rm -f "$DMG_FILE"
+          npx electron-builder --mac --${{ matrix.arch }} --publish never --config.mac.identity=null
 
       - name: Verify macOS artifacts
         run: |
